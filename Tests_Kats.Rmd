@@ -1,0 +1,434 @@
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Multi-tests avec simulate_data()
+
+
+fonctions annexes
+
+```{r}
+compute_mean_mse <- function(df, true_values) {
+  if (!is.data.frame(df)) stop("L'entrée doit être un data.frame.")
+  if (!is.numeric(true_values)) stop("true_values doit être un vecteur numérique.")
+  if (ncol(df) != length(true_values)) {
+    stop("Le nombre de colonnes du data.frame doit correspondre à la longueur de true_values.")
+  }
+
+  means <- colMeans(df, na.rm = TRUE)
+  
+  true_mat <- matrix(rep(true_values, each = nrow(df)), nrow = nrow(df), byrow = FALSE)
+  mse <- colMeans((df - true_mat)^2, na.rm = TRUE)
+  
+  result <- data.frame(
+    variable = colnames(df),
+    true_value = true_values,
+    mean = means,
+    mse = mse
+  )
+  
+  return(result)
+}
+```
+
+
+Ml_Cox()
+
+```{r}
+Multi_tests = function(N_test,
+                       n_cov,
+                       n_cluster,
+                       n_per_cluster,
+                       a1,
+                       b1)
+{
+  n = n_cluster * n_per_cluster
+  results <- data.frame(matrix(NA, nrow = N_test, ncol = (n_cov)))
+  if (n_cov > 0) {
+    colnames(results) <- paste0("beta", 1:n_cov)
+  } else{
+    stop("Covariables missing")
+  }
+  for (i in 1:N_test)
+  {
+    G <- rep(1:n_cluster, each = n_per_cluster)
+    if (n_cov == 0) {
+      Z <- matrix(0, n, 0)
+    } else {
+      Z <- matrix(runif(n * n_cov, a1, b1), ncol = n_cov)
+    }
+    df = simulate_data(
+      G,
+      Z,
+      prop = 0.6,
+      beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
+      theta = 0,
+      cens = TRUE,
+      pcens = 0.25,
+      tau = 0.5
+    )
+    df = data.frame(times = df$times, status = df$status,clusters = rep(1,length(G)),as.matrix(df[,4:(n_cov + 3)]))
+    ind <- which(df$status > 1)
+    df$status[ind] <- 1
+    res <- tryCatch(
+      Ml_Cox(df),
+      error = function(e) {
+        message("Erreur à l’itération ", i, " : ", e$message)
+        return(NULL)
+      }
+    )
+    
+    if (!is.null(res)) {
+      if (n_cov > 0) {
+        results[i, 1:n_cov] <- res
+      }
+    }
+    cat("itération", i, " sur ", N_test, "\n")
+  }
+  return(results)
+}
+
+M = Multi_tests(
+  N_test = 100,
+  n_cov = 8,
+  n_cluster = 20,
+  n_per_cluster = 25,
+  a1 = 0,
+  b1 = 1
+)
+
+m = compute_mean_mse(M, c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35))
+m
+```
+
+
+Reml_Cox_frailty()
+
+```{r}
+Multi_tests = function(N_test,
+                       n_cov,
+                       n_cluster,
+                       n_per_cluster,
+                       a1,
+                       b1)
+{
+  n = n_cluster * n_per_cluster
+  results <- data.frame(matrix(NA, nrow = N_test, ncol = (n_cov + 1)))
+  if (n_cov > 0) {
+    colnames(results) <- c(paste0("beta", 1:n_cov), "theta_hat")
+  } else{
+    colnames(results) <- "theta_hat"
+  }
+  for (i in 1:N_test)
+  {
+    G <- rep(1:n_cluster, each = n_per_cluster)
+    if (n_cov == 0) {
+      Z <- matrix(0, n, 0)
+    } else {
+      Z <- matrix(runif(n * n_cov, a1, b1), ncol = n_cov)
+    }
+    df = simulate_data(
+      G,
+      Z,
+      prop = 0.6,
+      beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
+      theta = 0.05,
+      cens = TRUE,
+      pcens = 0.25,
+      tau = 0.5
+    )
+    ind <- which(df$status > 1)
+    df$status[ind] <- 1
+    df = data.frame(times = df$times,status = df$status,clusters = df$clusters,as.matrix(df[,4:(n_cov + 3)]))
+    res <- tryCatch(
+      Reml_Cox_frailty(df),
+      error = function(e) {
+        message("Erreur à l’itération ", i, " : ", e$message)
+        return(NULL)
+      }
+    )
+    if (!is.null(res)) {
+      if (n_cov > 0) {
+        results[i, 1:n_cov] <- res$beta
+        results[i, "theta_hat"] <- res$theta
+      } else{
+        results[i, "theta_hat"] <- res$theta
+      }
+    }
+    cat("itération", i, " sur ", N_test, "\n")
+  }
+  return(results)
+}
+
+M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 20,n_per_cluster = 25,a1 = 0,b1 = 1)
+
+m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.05))
+m
+```
+
+
+Ml_CompRisk()
+
+```{r}
+Multi_tests = function(N_test,
+                       n_cov,
+                       n_cluster,
+                       n_per_cluster,
+                       a1,
+                       b1)
+{
+  n = n_cluster * n_per_cluster
+  results <- data.frame(matrix(NA, nrow = N_test, ncol = (n_cov)))
+  if (n_cov > 0) {
+    colnames(results) <- paste0("beta", 1:n_cov)
+  } else{
+    stop("Covariables missing")
+  }
+  for (i in 1:N_test)
+  {
+    G <- rep(1:n_cluster, each = n_per_cluster)
+    if (n_cov == 0) {
+      Z <- matrix(0, n, 0)
+    } else {
+      Z <- matrix(runif(n * n_cov, a1, b1), ncol = n_cov)
+    }
+    df = simulate_data(
+      G,
+      Z,
+      prop = 0.6,
+      beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
+      theta = 0,
+      cens = TRUE,
+      pcens = 0.25,
+      tau = 0.5
+    )
+    df = data.frame(times = df$times, status = df$status, clusters = rep(1,length(G)), as.matrix(df[,4:(n_cov + 3)]))
+    res <- tryCatch(
+      Ml_CompRisk(df),
+      error = function(e) {
+        message("Erreur à l’itération ", i, " : ", e$message)
+        return(NULL)
+      }
+    )
+    
+    if (!is.null(res)) {
+      if (n_cov > 0) {
+        results[i, 1:n_cov] <- res
+      }
+    }
+    cat("itération", i, " sur ", N_test, "\n")
+  }
+  return(results)
+}
+
+M = Multi_tests(
+  N_test = 20,
+  n_cov = 8,
+  n_cluster = 20,
+  n_per_cluster = 25,
+  a1 = 0,
+  b1 = 1
+)
+
+m = compute_mean_mse(M, c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35))
+m
+
+```
+
+
+Reml_CompRisk_frailty()
+
+```{r}
+Multi_tests = function(N_test,
+                       n_cov,
+                       n_cluster,
+                       n_per_cluster,
+                       a1,
+                       b1)
+{
+  n = n_cluster * n_per_cluster
+  results <- data.frame(matrix(NA, nrow = N_test, ncol = (n_cov + 1)))
+  if (n_cov > 0) {
+    colnames(results) <- c(paste0("beta", 1:n_cov), "theta_hat")
+  } else{
+    colnames(results) <- "theta_hat"
+  }
+  for (i in 1:N_test)
+  {
+    G <- rep(1:n_cluster, each = n_per_cluster)
+    if (n_cov == 0) {
+      Z <- matrix(0, n, 0)
+    } else {
+      Z <- matrix(runif(n * n_cov, a1, b1), ncol = n_cov)
+    }
+    df = simulate_data(
+      G,
+      Z,
+      prop = 0.6,
+      beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
+      theta = 0,
+      cens = TRUE,
+      pcens = 0.25,
+      tau = 0.5
+    )
+    check_data_format(df)
+    res <- tryCatch(
+      Reml_CompRisk_frailty(df),
+      error = function(e) {
+        message("Erreur à l’itération ", i, " : ", e$message)
+        return(NULL)
+      }
+    )
+    if (!is.null(res)) {
+      if (n_cov > 0) {
+        results[i, 1:n_cov] <- res$beta
+        results[i, "theta_hat"] <- res$theta
+      } else{
+        results[i, "theta_hat"] <- res$theta
+      }
+    }
+    cat("itération", i, " sur ", N_test, "\n")
+  }
+  return(results)
+}
+
+M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 20,n_per_cluster = 25,a1 = 0,b1 = 1)
+
+m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0))
+m
+```
+
+
+
+```{r}
+library(grid)
+library(gridExtra)
+png("C:/Users/delbe/Total/TRAVAIL/Informatique/moyenne et mse pour 6 covariables gaussiennes avec K = 20 et N = 500.png", width = 1000, height = 500)
+grid.table(m_sd)
+dev.off()
+```
+
+```{r}
+generate_full_table <- function(
+    gamma_vec = c(0, 0.375),
+    theta_vec = c(0, 0.1, 0.6),
+    N_vec = c(200, 500),
+    K_vec = c(5, 20),
+    n_sim = 100,
+    pcens = 0.25
+) {
+  full_results <- list()
+  idx <- 1
+  
+  for (gamma in gamma_vec) {
+    for (theta in theta_vec) {
+      for (N in N_vec) {
+        for (K in K_vec) {
+          n_cov <- if (gamma == 0) 0 else 1
+          n_per_cluster <- N / K
+          beta <- if (n_cov == 1) gamma else numeric(0)
+
+          results <- data.frame(matrix(NA, nrow = n_sim, ncol = (n_cov + 1)))
+          if (n_cov > 0) {
+            colnames(results) <- c("gamma_hat", "theta_hat")
+          } else {
+            colnames(results) <- "theta_hat"
+          }
+
+          for (i in 1:n_sim) {
+            G <- rep(1:K, each = n_per_cluster)
+            Z <- if (n_cov == 0) matrix(0, N, 0) else matrix(runif(N * n_cov, 0, 1), ncol = n_cov)
+            df <- simulate_data(G, Z, prop = 0.6, beta = beta, theta = theta,
+                                cens = TRUE, pcens = pcens, tau = 0.5)
+            check_data_format(df)
+            res <- tryCatch(
+              Reml_CompRisk_frailty(df),
+              error = function(e) return(NULL)
+            )
+            if (!is.null(res)) {
+              if (n_cov > 0) {
+                results[i, "gamma_hat"] <- res$beta
+                results[i, "theta_hat"] <- res$theta
+              } else {
+                results[i, "theta_hat"] <- res$theta
+              }
+            }
+          }
+
+          mean_gamma_hat <- if (n_cov > 0) mean(results$gamma_hat, na.rm = TRUE) else NA
+          rmse_gamma_hat <- if (n_cov > 0) sqrt(mean((results$gamma_hat - gamma)^2, na.rm = TRUE)) else NA
+          mean_theta_hat <- mean(results$theta_hat, na.rm = TRUE)
+          rmse_theta_hat <- sqrt(mean((results$theta_hat - theta)^2, na.rm = TRUE))
+
+          config_id <- paste0("gamma=", gamma,
+                              "_theta=", theta,
+                              "_N=", N,
+                              "_K=", K)
+
+          full_results[[idx]] <- data.frame(
+            config_id = config_id,
+            gamma = gamma,
+            theta = theta,
+            N = N,
+            K = K,
+            mean_gamma_hat = mean_gamma_hat,
+            rmse_gamma_hat = rmse_gamma_hat,
+            mean_theta_hat = mean_theta_hat,
+            rmse_theta_hat = rmse_theta_hat
+          )
+          idx <- idx + 1
+          cat("Terminé :", config_id, "\n")
+        }
+      }
+    }
+  }
+
+  final_df <- do.call(rbind, full_results)
+  return(final_df)
+}
+
+big_table <- generate_full_table(
+  gamma_vec = c(0, 0.375),
+  theta_vec = c(0, 0.1),
+  N_vec = c(200),
+  K_vec = c(5, 20),
+  n_sim = 50
+)
+
+big_table
+```
+```{r}
+library(gt)
+
+gt_table <- big_table %>%
+  gt() %>%
+  tab_header(
+    title = "Résultats de simulation",
+    subtitle = "Estimation de gamma et theta selon les configurations"
+  ) %>%
+  fmt_number(
+    columns = where(is.numeric),
+    decimals = 4
+  ) %>%
+  cols_label(
+    config_id = "Configuration",
+    gamma = "Gamma vrai",
+    theta = "Theta vrai",
+    N = "Taille N",
+    K = "Clusters K",
+    mean_gamma_hat = "Moy. gamma",
+    rmse_gamma_hat = "RMSE gamma",
+    mean_theta_hat = "Moy. theta",
+    rmse_theta_hat = "RMSE theta"
+  ) %>%
+  tab_options(
+    table.font.size = "small",
+    heading.align = "left"
+  )
+
+gt_table
+
+```
+
