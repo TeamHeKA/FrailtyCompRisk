@@ -1,10 +1,21 @@
-
+---
+title: "Tests Kats"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tests Kats}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(multicenterCompRisk)
+library(tibble)
+library(dplyr)
+library(knitr)
+library(kableExtra)
 ```
 
-
-Multi-tests avec simulate_data()
+Multi_tests with simulate_data()
 
 
 fonctions annexes
@@ -90,17 +101,9 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(
-  N_test = 100,
-  n_cov = 8,
-  n_cluster = 20,
-  n_per_cluster = 25,
-  a1 = 0,
-  b1 = 1
-)
+# M = Multi_tests(N_test = 100,n_cov = 8,n_cluster = 20,n_per_cluster = 25,a1 = 0,b1=1)
+# m = compute_mean_mse(M, c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35))
 
-m = compute_mean_mse(M, c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35))
-m
 ```
 
 
@@ -162,10 +165,9 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(N_test = 200,n_cov = 8,n_cluster = 20,n_per_cluster = 100,a1 = 0,b1 = 1)
+# M = Multi_tests(N_test = 200,n_cov = 8,n_cluster = 20,n_per_cluster = 100,a1 = 0,b1 = 1)
 
-m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.05))
-m
+# m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.05))
 ```
 
 
@@ -223,18 +225,9 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(
-  N_test = 20,
-  n_cov = 8,
-  n_cluster = 20,
-  n_per_cluster = 25,
-  a1 = 0,
-  b1 = 1
-)
+# M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 20,n_per_cluster = 25,a1 = 0,b1 = 1)
 
-m = compute_mean_mse(M, c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35))
-m
-
+# m = compute_mean_mse(M, c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35))
 ```
 
 
@@ -294,20 +287,14 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(N_test = 10,n_cov = 8,n_cluster = 100,n_per_cluster = 250,a1 = 0,b1 = 1)
+# M = Multi_tests(N_test = 10,n_cov = 8,n_cluster = 100,n_per_cluster = 250,a1 = 0,b1 = 1)
 
-m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.6))
-m
+# m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.6))
 ```
 
 
 
-Tableau de Sandrine
-
-```{r}
-library(tibble)
-```
-
+Creation of huge data sets with numerous variables
 
 ```{r}
 generate_full_table <- function(
@@ -401,21 +388,7 @@ generate_full_table <- function(
   return(list(final_df = final_df,beta_vec = beta_vec))
 }
 
-big_table <- generate_full_table(
-  beta_vec = list(a=c(1,0.2),b=c(-0.2,0,0.4,-0.5),d=c(0.3,0.7,-0.15,-0.45,0.3,-0.5)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 200, pcens = 0.25
-)
-
-View(big_table$final_df)
-
-```
-
-
-
-```{r}
-library(tibble)
-library(dplyr)
-library(knitr)
-library(kableExtra)
+# big_table <- generate_full_table(beta_vec = list(a=c(1,0.2),b=c(-0.2,0,0.4,-0.5),d=c(0.3,0.7,-0.15,-0.45,0.3,-0.5)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 200, pcens = 0.25)
 ```
 
 ```{r}
@@ -441,9 +414,6 @@ export_to_latex <- function(final_df, file = "simulation_results.tex") {
 }
 ```
 
-```{r}
-export_to_latex(big_table$final_df,"simulation_results_3.tex")
-```
 
 
 

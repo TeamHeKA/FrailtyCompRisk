@@ -19,9 +19,11 @@ Imports:
     Matrix,
     stats
 Suggests:
+    dplyr,
+    tibble,
+    kableExtra,
     knitr,
-    rmarkdown,
-    testthat
+    rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/DELMASben/multicenterCompRisk
 BugReports: https://github.com/DELMASben/multicenterCompRisk/issues
