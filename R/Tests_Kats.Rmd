@@ -162,7 +162,7 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 20,n_per_cluster = 25,a1 = 0,b1 = 1)
+M = Multi_tests(N_test = 200,n_cov = 8,n_cluster = 20,n_per_cluster = 100,a1 = 0,b1 = 1)
 
 m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.05))
 m
@@ -268,14 +268,14 @@ Multi_tests = function(N_test,
       Z,
       prop = 0.6,
       beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
-      theta = 0,
+      theta = 0.6,
       cens = TRUE,
       pcens = 0.25,
       tau = 0.5
     )
     check_data_format(df)
     res <- tryCatch(
-      Reml_CompRisk_frailty(df),
+      Reml_CompRisk_frailty(df, max_iter = 100),
       error = function(e) {
         message("Erreur à l’itération ", i, " : ", e$message)
         return(NULL)
@@ -294,141 +294,157 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 20,n_per_cluster = 25,a1 = 0,b1 = 1)
+M = Multi_tests(N_test = 10,n_cov = 8,n_cluster = 100,n_per_cluster = 250,a1 = 0,b1 = 1)
 
-m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0))
+m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.6))
 m
 ```
 
 
 
+Tableau de Sandrine
+
 ```{r}
-library(grid)
-library(gridExtra)
-png("C:/Users/delbe/Total/TRAVAIL/Informatique/moyenne et mse pour 6 covariables gaussiennes avec K = 20 et N = 500.png", width = 1000, height = 500)
-grid.table(m_sd)
-dev.off()
+library(tibble)
 ```
+
 
 ```{r}
 generate_full_table <- function(
-    gamma_vec = c(0, 0.375),
-    theta_vec = c(0, 0.1, 0.6),
-    N_vec = c(200, 500),
-    K_vec = c(5, 20),
-    n_sim = 100,
-    pcens = 0.25
+  beta_vec,
+  theta_vec,
+  N_vec,
+  K_vec,
+  n_sim = 100,
+  pcens = 0.25
 ) {
+  iter <- 1
+  n_iter <- n_sim * length(N_vec) * length(K_vec) * length(theta_vec) * length(beta_vec)
   full_results <- list()
   idx <- 1
-  
-  for (gamma in gamma_vec) {
+
+  suppressWarnings(suppressMessages({
     for (theta in theta_vec) {
-      for (N in N_vec) {
-        for (K in K_vec) {
-          n_cov <- if (gamma == 0) 0 else 1
-          n_per_cluster <- N / K
-          beta <- if (n_cov == 1) gamma else numeric(0)
+      for (beta in beta_vec) {
+        beta_clean <- as.numeric(beta)
+        n_cov <- length(beta_clean)
 
-          results <- data.frame(matrix(NA, nrow = n_sim, ncol = (n_cov + 1)))
-          if (n_cov > 0) {
-            colnames(results) <- c("gamma_hat", "theta_hat")
-          } else {
-            colnames(results) <- "theta_hat"
-          }
+        for (N in N_vec) {
+          for (K in K_vec) {
+            n_per_cluster <- N / K
+            config_id <- paste0("gamma=", paste(beta_clean, collapse = ","),
+                                "  theta=", theta,
+                                "  N=", N,
+                                "  K=", K)
+            cat("Starting :", config_id, "\n")
 
-          for (i in 1:n_sim) {
-            G <- rep(1:K, each = n_per_cluster)
-            Z <- if (n_cov == 0) matrix(0, N, 0) else matrix(runif(N * n_cov, 0, 1), ncol = n_cov)
-            df <- simulate_data(G, Z, prop = 0.6, beta = beta, theta = theta,
-                                cens = TRUE, pcens = pcens, tau = 0.5)
-            check_data_format(df)
-            res <- tryCatch(
-              Reml_CompRisk_frailty(df),
-              error = function(e) return(NULL)
-            )
-            if (!is.null(res)) {
-              if (n_cov > 0) {
-                results[i, "gamma_hat"] <- res$beta
-                results[i, "theta_hat"] <- res$theta
-              } else {
-                results[i, "theta_hat"] <- res$theta
+            results_1 <- matrix(NA, nrow = n_sim, ncol = n_cov)
+            results_2 <- rep(NA, n_sim)
+
+            for (i in 1:n_sim) {
+              cat("iteration", iter, "out of", n_iter, "\n")
+              G <- rep(1:K, each = n_per_cluster)
+              Z <- if (n_cov == 0) matrix(0, N, 0) else matrix(runif(N * n_cov, 0, 1), ncol = n_cov)
+
+              df <- simulate_data(G, Z, prop = 0.6, beta = beta_clean, theta = theta,
+                                  cens = TRUE, pcens = pcens, tau = 0.5)
+              check_data_format(df)
+              res <- tryCatch(
+                Reml_CompRisk_frailty(df),
+                error = function(e) return(NULL)
+              )
+              if (!is.null(res)) {
+                if (n_cov > 0) {
+                  results_1[i, ] <- res$beta
+                }
+                results_2[i] <- res$theta
               }
+              iter <- iter + 1
             }
+            mean_gamma_hat <- c()
+            mse_gamma_hat <- c()
+            gamma_vals <- c()
+
+            if (n_cov > 0) {
+              mean_gamma_hat <- colMeans(results_1, na.rm = TRUE)
+              mse_gamma_hat <- colMeans((results_1 - matrix(rep(beta, each = n_sim), nrow = n_sim))^2, na.rm = TRUE)
+            }
+            
+            mean_theta_hat <- mean(results_2, na.rm = TRUE)
+            mse_theta_hat <- mean((results_2 - rep(theta, n_sim))^2, na.rm = TRUE)
+            
+            gamma_data <- tibble(
+              gamma = list(beta),
+              mean_gamma_hat = list(mean_gamma_hat),
+              mse_gamma_hat = list(mse_gamma_hat)
+            )
+            
+            full_results[[idx]] <- bind_cols(
+              tibble(
+                N = N,
+                K = K,
+                theta = theta,
+                mean_theta_hat = mean_theta_hat,
+                mse_theta_hat = mse_theta_hat
+              ),
+              gamma_data
+            )
+            idx <- idx + 1
+            cat("Finished :", config_id, "\n")
           }
-
-          mean_gamma_hat <- if (n_cov > 0) mean(results$gamma_hat, na.rm = TRUE) else NA
-          rmse_gamma_hat <- if (n_cov > 0) sqrt(mean((results$gamma_hat - gamma)^2, na.rm = TRUE)) else NA
-          mean_theta_hat <- mean(results$theta_hat, na.rm = TRUE)
-          rmse_theta_hat <- sqrt(mean((results$theta_hat - theta)^2, na.rm = TRUE))
-
-          config_id <- paste0("gamma=", gamma,
-                              "_theta=", theta,
-                              "_N=", N,
-                              "_K=", K)
-
-          full_results[[idx]] <- data.frame(
-            config_id = config_id,
-            gamma = gamma,
-            theta = theta,
-            N = N,
-            K = K,
-            mean_gamma_hat = mean_gamma_hat,
-            rmse_gamma_hat = rmse_gamma_hat,
-            mean_theta_hat = mean_theta_hat,
-            rmse_theta_hat = rmse_theta_hat
-          )
-          idx <- idx + 1
-          cat("Terminé :", config_id, "\n")
         }
       }
     }
-  }
+  }))
 
   final_df <- do.call(rbind, full_results)
-  return(final_df)
+  return(list(final_df = final_df,beta_vec = beta_vec))
 }
 
 big_table <- generate_full_table(
-  gamma_vec = c(0, 0.375),
-  theta_vec = c(0, 0.1),
-  N_vec = c(200),
-  K_vec = c(5, 20),
-  n_sim = 50
+  beta_vec = list(a=c(1,0.2),b=c(-0.2,0,0.4,-0.5),d=c(0.3,0.7,-0.15,-0.45,0.3,-0.5)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 200, pcens = 0.25
 )
 
-big_table
+View(big_table$final_df)
+
 ```
+
+
+
 ```{r}
-library(gt)
-
-gt_table <- big_table %>%
-  gt() %>%
-  tab_header(
-    title = "Résultats de simulation",
-    subtitle = "Estimation de gamma et theta selon les configurations"
-  ) %>%
-  fmt_number(
-    columns = where(is.numeric),
-    decimals = 4
-  ) %>%
-  cols_label(
-    config_id = "Configuration",
-    gamma = "Gamma vrai",
-    theta = "Theta vrai",
-    N = "Taille N",
-    K = "Clusters K",
-    mean_gamma_hat = "Moy. gamma",
-    rmse_gamma_hat = "RMSE gamma",
-    mean_theta_hat = "Moy. theta",
-    rmse_theta_hat = "RMSE theta"
-  ) %>%
-  tab_options(
-    table.font.size = "small",
-    heading.align = "left"
-  )
-
-gt_table
-
+library(tibble)
+library(dplyr)
+library(knitr)
+library(kableExtra)
 ```
+
+```{r}
+export_to_latex <- function(final_df, file = "simulation_results.tex") {
+  # On applique une ligne par simulation avec une cellule contenant les vecteurs formatés
+  formatted_df <- final_df %>%
+    mutate(
+      gamma = sapply(gamma, function(x) paste0("(", paste(round(x, 3), collapse = ", "), ")")),
+      mean_gamma_hat = sapply(mean_gamma_hat, function(x) paste0("(", paste(round(x, 3), collapse = ", "), ")")),
+      mse_gamma_hat = sapply(mse_gamma_hat, function(x) paste0("(", paste(round(x, 5), collapse = ", "), ")")),
+      mean_theta_hat = round(mean_theta_hat, 3),
+      mse_theta_hat = round(mse_theta_hat, 5)
+    )
+
+  # Affichage en LaTeX
+  tex_table <- kable(formatted_df, format = "latex", booktabs = TRUE, escape = FALSE,
+                     col.names = c("N", "K", "$\\theta$", "$\\widehat{\\theta}$", "MSE($\\theta$)",
+                                   "$\\gamma$", "$\\widehat{\\gamma}$", "MSE($\\gamma$)")) %>%
+    kable_styling(latex_options = c("striped", "hold_position"), full_width = FALSE)
+
+  # Sauvegarde dans un fichier
+  writeLines(tex_table, file)
+}
+```
+
+```{r}
+export_to_latex(big_table$final_df,"simulation_results_3.tex")
+```
+
+
+
 
