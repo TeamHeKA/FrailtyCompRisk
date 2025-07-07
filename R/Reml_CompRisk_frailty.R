@@ -43,6 +43,7 @@
 #' result$p_value
 #' }
 #'
+#' @importFrom stats pchisq
 #' @export
 
 Reml_CompRisk_frailty <- function(data,cluster_censoring = F, max_iter=300, tol = 1e-6, threshold = 1e-5)
@@ -193,7 +194,7 @@ Reml_CompRisk_frailty <- function(data,cluster_censoring = F, max_iter=300, tol 
   }
   if (!(is.na(p_value)) && (p_value >= 0.05))
   {
-    message("A p-value greater than 0.05 in the test of θ=0 suggests that the cluster effect may be negligible.\n p-value = ",p_value)
+    message("A p-value greater than 0.05 in the test of theta=0 suggests that the cluster effect may be negligible.\n p-value = ",p_value)
   }
   return(list(beta = gamma_0,u = u_0, theta = theta_0,p_value = p_value))
 }

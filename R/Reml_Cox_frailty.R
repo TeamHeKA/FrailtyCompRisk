@@ -25,6 +25,7 @@
 #' The hypothesis test of \eqn{H_0: \theta = 0} is based on a Wald-type statistic. A high p-value (e.g. > 0.05) may indicate that the random effects (frailties) are negligible.
 #'
 #' @importFrom Matrix Matrix Diagonal
+#' @importFrom stats pchisq
 #'
 #' @seealso \code{\link{Ml_Cox}}, \code{\link{logLikelihood_1}}, \code{\link{logLikelihood_2}}
 #'
@@ -161,7 +162,7 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
 
   p_value <- pchisq(wald_stat, df = df_eff, lower.tail = FALSE)
   if (p < 0.05){
-    message("A p-value greater than 0.05 in the test of θ=0 suggests that the cluster effect may be negligible.\n","p-value = ",p_value,"\n")
+    message("A p-value greater than 0.05 in the test of theta=0 suggests that the cluster effect may be negligible.\n","p-value = ",p_value,"\n")
   }
   return(list(beta = gamma_0,u = u_0, theta = theta_0,p_value = p_value))
 }

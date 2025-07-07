@@ -1,13 +1,27 @@
-Package: Package
-Title: What the Package Does (One Line, Title Case)
+Package: multicenterCompRisk
+Title: Competing Risks Models for Multicenter Survival Data with Frailty
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = c("aut", "cre"))
+Description: The multicenterCompRisk package implements the method proposed by Sandrine Katsahian in the article “Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution” (Statistics in Medicine, 2006). 
+    It provides tools for analyzing competing risks data arising from multicenter studies, incorporating cluster-specific frailty terms within a subdistribution hazards framework. 
+    The package supports both Maximum Likelihood (ML) and Restricted Maximum Likelihood (REML) estimation, allowing for flexible modeling of between-center heterogeneity. 
+    It is particularly designed for survival analyses in multicenter clinical trials or registries, where accounting for latent center effects is crucial. 
+    Core features include data simulation, model estimation with or without frailty, cluster-dependent censoring options, likelihood computation, and formal testing of the relevance of the frailty variance.
+License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Depends:
+    R (>= 3.5.0)
 Imports:
-    Matrix
+    Matrix,
+    stats
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+URL: https://github.com/DELMASben/multicenterCompRisk
+BugReports: https://github.com/DELMASben/multicenterCompRisk/issues

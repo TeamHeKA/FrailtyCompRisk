@@ -24,12 +24,11 @@
 #'
 #' @export
 KaplanMeier_Censoring_vectorized <- function(times, status, unique_times) {
-  check_data_format(data.frame(times = times, status = status))
-  
+
   n <- length(unique_times)
   surv <- numeric(n)
   surv[1] <- 1
-  
+
   for (i in seq_len(n)) {
     t <- unique_times[i]
     d <- sum(times == t & status == 0)  # number of censored at time t
@@ -40,6 +39,6 @@ KaplanMeier_Censoring_vectorized <- function(times, status, unique_times) {
       surv[i] <- ifelse(i == 1, 1, surv[i - 1])
     }
   }
-  
+
   return(surv)
 }
