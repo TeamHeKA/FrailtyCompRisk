@@ -36,15 +36,18 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
   times <- data$times
   status <- data$status
   clusters <- data$clusters
-  X <- as.matrix(data[,4:length(data[1,])])
-
-  p <- ncol(X)
+  p <- (length(data[1,])-3)
   N <- length(times)
   K <- length(unique(clusters))
 
-  if (is.null(p)){p <- 0}
+  if (p > 0) {
+    X <- Matrix(as.matrix(data[, 4:(p + 3)]), sparse = TRUE)
+  } else {
+    X <- Matrix(0, N, 0, sparse = TRUE)
+  }
+
   if (p>0){
-    data_ini <- data.frame(times = times,status = status,clusters = clusters, X)
+    data_ini <- data.frame(times = times,status = status,clusters = clusters, as.matrix(X))
     gamma_Cox <- Ml_Cox(data_ini)
     gamma_0 <- gamma_Cox
   }else{
@@ -63,24 +66,19 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
 
   if (p>0){
     Y <- cbind(Z, Q)
-    Y_t <- rbind(t(Z), t(Q))
+    Y_t <- rbind(Matrix::t(Z), Matrix::t(Q))
   }else{
-    Y <-Q
-    Y_t <- t(Q)
+    Y <- Q
+    Y_t <- Matrix::t(Q)
   }
 
   D <- Matrix(as.numeric(status == 1), ncol = 1, sparse = TRUE)
 
-  if (p>0){
-    eta <- as.vector(Z %*% gamma_0 + Q %*% u_0)
-    W_diag <- exp(eta)
-  }else{
-    eta <- as.vector(Q %*% u_0)
-    W_diag <- exp(eta)
-  }
+  eta <- if (p > 0) as.vector(Z %*% gamma_0 + Q %*% u_0) else as.vector(Q %*% u_0)
+  W_diag <- exp(eta)
   W <- Diagonal(x = W_diag)
 
-  M <- matrix(0,N,N)
+  M <- Matrix(0,N,N)
   for (i in 1:N){
     for (j in 1:N){
       if (times[i] <= times[j])
@@ -88,9 +86,9 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
     }
   }
 
-  Mt <- t(M)
+  Mt <- Matrix::t(M)
 
-  v <- as.vector(colSums(M * W_diag))
+  v <- as.vector(colSums(as.matrix(M * W_diag)))
   a <- numeric(N)
   a[status == 1] <- 1 / v[status == 1]
   A <- Diagonal(x = a)
@@ -111,8 +109,8 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
     A2 <- Diagonal(x = a_sq)
     negHess <- W %*% (B - M %*% A2 %*% Mt %*% W)
 
-    M_pen <- Diagonal(p + K)
-    diag(M_pen)[(p + 1):(p + K)] <- 1 / theta_0
+    d <- c(rep(1, p), rep(1 / theta_0, K))
+    M_pen <- Diagonal(x = d)
 
     V <- Y_t %*% negHess %*% Y + M_pen
     inv_V <- solve(V)
@@ -130,17 +128,12 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
     trace_term <- sum(diag(inv_V[(p + 1):(p + K), (p + 1):(p + K)]))
     theta_0 <- as.numeric((t(u_0) %*% u_0) / (K - (trace_term / theta_0)))
 
-    if (p>0){
-      eta <- as.vector(Z %*% gamma_0 + Q %*% u_0)
-      W_diag <- exp(eta)
-    }else{
-      eta <- as.vector(Q %*% u_0)
-      W_diag <- exp(eta)
-    }
+    eta <- if (p > 0) as.vector(Z %*% gamma_0 + Q %*% u_0) else as.vector(Q %*% u_0)
+    W_diag <- exp(eta)
 
     W <- Diagonal(x = W_diag)
 
-    v <- as.vector(colSums(M * W_diag))
+    v <- as.vector(colSums(as.matrix(M * W_diag)))
     a <- numeric(N)
     a[status == 1] <- 1 / v[status == 1]
     A <- Diagonal(x = a)

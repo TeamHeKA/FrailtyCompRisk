@@ -57,7 +57,7 @@ compute_M_optimized <- function(times, status, f, u_bis, clusters)
   G_T_i_mat <- matrix(rep(G_T_i, each = N), nrow = N)
   G_T_j_mat <- matrix(rep(G_T_j, times = N), nrow = N)
 
-  M <- matrix(0, nrow = N, ncol = N)
+  M <- Matrix(0, nrow = N, ncol = N)
   M[cond1] <- G_T_i_mat[cond1] / G_T_j_mat[cond1]
   M[cond2] <- 1
   M[cond3] <- 0

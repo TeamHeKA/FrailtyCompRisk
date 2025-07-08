@@ -50,118 +50,54 @@
 #' @export
 
 
-simulate_data <- function(G, Z, prop = 0.6, beta, theta, cens = FALSE, pcens = 0.25, tau = 0)
-{
-
-  k <- length(unique(G))
+simulate_data <- function(G, Z = NULL, prop = 0.6, beta = NULL, theta = 0.5, cens = FALSE, pcens = 0.25, tau = 0.5) {
   N <- length(G)
-  p <- ncol(Z)
+  k <- length(unique(G))
+  p <- if (!is.null(Z)) if (is.null(dim(Z))) 1 else ncol(Z) else 0
 
-  if (is.null(p)){p <- 0}
-  if ((length(beta)!=0) && (length(beta) != p)) {
-    stop("The length of beta must match the number of columns in Z.")
-  }
+  if (p > 0 && is.null(beta)) stop("You must provide beta when Z is given.")
+  if (p > 0 && length(beta) != p) stop("Length of beta must match the number of columns in Z.")
 
-  # Initialization: primary failure cause (1)
-  cf <- rep(1, N)
-  ux <- runif(N)
+  # Frailty
+  cluster_id <- as.numeric(factor(G))
+  frailty <- rnorm(k, mean = 0, sd = sqrt(theta))[cluster_id]
 
-  # Simulation of random effects (shared frailty)
-  G.seed <- rnorm(k, mean = 0, sd = sqrt(theta))
-  fragile <- factor(G)
-  levels(fragile) <- G.seed
-  fragile <- as.numeric(as.character(fragile))  # vector of size N
+  # Predictors
+  linpred <- if (p > 0) as.vector(Z %*% beta) + frailty else frailty
 
-  # Inversion of the cumulative incidence function for cause 1
-  suppressWarnings({
-    if (p>0){
-      linpred <- as.vector(Z %*% beta) + fragile   # linear predictor + frailty
-    }else{
-      linpred <- fragile
-    }
-    tf <- log(prop) - log(prop - 1 + exp(log(1 - ux) / exp(linpred)))
-  })
+  # Simulate uniform random variable
+  u <- runif(N)
 
-  # Case where tf is NaN (e.g. log of negative value)
-  cf[is.na(tf)] <- 2
-  l.na <- sum(is.na(tf))
+  # Inverse CDF of cause 1 failure time
+  tf <- -log(1 - u) / (prop * exp(linpred))  # Exponential approximation
 
-  # Type II durations (for NAs in tf)
-  if (p > 0) {
-    taux <- exp(Z %*% beta)      # here we assume the same beta is used
-    taux <- as.vector(taux)      # vector of size N
-    tf[is.na(tf)] <- rexp(l.na, rate = taux[is.na(tf)])
-  }else{
-    tf[is.na(tf)] <- rexp(l.na,1)
-  }
-
-  # Censoring
+  # Censure
   if (cens) {
-    G.seed2 <- rnorm(k, mean = 0, sd = sqrt(tau))
-    fragile2 <- factor(G)
-    levels(fragile2) <- G.seed2
-    fragile2 <- as.numeric(as.character(fragile2))
+    frailty_cens <- rnorm(k, mean = 0, sd = sqrt(tau))[cluster_id]
 
-    # Lambda computation to reach pcens
-    if (p == 0){
-      ex <- 1
-    }else{
-      ex <- exp(sum(beta)) / p # rough approximation of E[exp(Xβ)] if unknown
-    }
+    # Calibrate censoring distribution
+    # Assume base rate such that proportion censored ~ pcens
+    base_rate <- uniroot(function(r) {
+      mean(rexp(N, rate = r * exp(frailty_cens)) > tf) - pcens
+    }, interval = c(0.001, 100))$root
 
-    lamt <- 1
-    b <- 0.5 * (1 - ex) - pcens * (1 + ex) + ex
-    racstatus <- lamt * sqrt(b^2 + 4 * (1 - pcens) * pcens * ex)
-    lamc <- (-b * lamt + racstatus) / (2 * (1 - pcens))
-
-    censure1 <- rexp(N, rate = lamc * exp(fragile2))
+    censure_times <- rexp(N, rate = base_rate * exp(frailty_cens))
   } else {
-    censure1 <- rep(max(tf) + 1e-6, N)
+    censure_times <- rep(max(tf) + 1, N)
   }
 
-  # Construction of observed time variables
-  X <- pmin(tf, censure1)
-  epsilon <- cf
-  epsilon[tf > X] <- 0
-  status <- ifelse(epsilon == 1, 1, 0)
-  Y <- censure1 * (status == 0) + X * (status == 1)
+  # Observed data
+  X <- pmin(tf, censure_times)
+  status <- as.integer(tf <= censure_times)
 
-  # Output data.frame construction
-  data <- data.frame(tf = tf,
-                     censure1 = censure1,
-                     X = X,
-                     Y = Y,
-                     status = status,
-                     epsilon = epsilon,
-                     cf = cf,
-                     G = G,
-                     Z = Z)
+  # Build output
+  df <- data.frame(
+    times = X,
+    status = status,
+    clusters = G
+  )
+  if (p > 0) df <- cbind(df, as.data.frame(Z))
 
-  N <- length(data[,1])
-  n <- length(data[1,])
-  times <- rep(0,N)
-  status <- rep(0,N)
-  clusters <- data$G
-
-  for (i in 1:N)
-  {
-    if (data$status[i] == 0)
-    {
-      status[i] = 0
-      times[i] = data$censure1[i]
-    }
-    if (data$status[i] != 0)
-    {
-      status[i] = data$cf[i]
-      times[i] = data$tf[i]
-    }
-  }
-  if (p >= 1){
-    Cov = as.matrix(data[,(n+1-p):n])
-  }else{
-    Cov = matrix(0,N,0)
-  }
-
-  df = data.frame(times = times,status = status,clusters = clusters,Cov)
   return(df)
 }
+

@@ -1,8 +1,12 @@
 Package: multicenterCompRisk
 Title: Competing Risks Models for Multicenter Survival Data with Frailty
 Version: 0.0.0.9000
-Authors@R: 
-    person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = c("aut", "cre"))
+Authors@R: c(
+  person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = c("aut", "cre")),
+  person("Lucas", "Ducrot", role = "aut"),
+  person("Sandrine", "Katsahian", role = "aut"),
+  person(given = "INRIA", role = "cph")
+  )
 Description: The multicenterCompRisk package implements the method proposed by Sandrine Katsahian in the article “Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution” (Statistics in Medicine, 2006). 
     It provides tools for analyzing competing risks data arising from multicenter studies, incorporating cluster-specific frailty terms within a subdistribution hazards framework. 
     The package supports both Maximum Likelihood (ML) and Restricted Maximum Likelihood (REML) estimation, allowing for flexible modeling of between-center heterogeneity. 
