@@ -154,8 +154,6 @@ Reml_Cox_frailty <- function(data,max_iter=300, tol = 1e-6)
   df_eff <- K - sum(diag(A22)) / theta_0
 
   p_value <- pchisq(wald_stat, df = df_eff, lower.tail = FALSE)
-  if (p < 0.05){
-    message("A p-value greater than 0.05 in the test of theta=0 suggests that the cluster effect may be negligible.\n","p-value = ",p_value,"\n")
-  }
+
   return(list(beta = gamma_0,u = u_0, theta = theta_0,p_value = p_value))
 }

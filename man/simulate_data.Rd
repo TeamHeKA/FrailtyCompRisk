@@ -6,13 +6,13 @@
 \usage{
 simulate_data(
   G,
-  Z,
+  Z = NULL,
   prop = 0.6,
-  beta,
-  theta,
+  beta = NULL,
+  theta = 0.5,
   cens = FALSE,
   pcens = 0.25,
-  tau = 0
+  tau = 0.5
 )
 }
 \arguments{

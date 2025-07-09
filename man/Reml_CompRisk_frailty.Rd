@@ -6,7 +6,7 @@
 \usage{
 Reml_CompRisk_frailty(
   data,
-  cluster_censoring = F,
+  cluster_censoring = FALSE,
   max_iter = 300,
   tol = 1e-06,
   threshold = 1e-05

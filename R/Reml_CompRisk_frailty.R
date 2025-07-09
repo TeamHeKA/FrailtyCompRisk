@@ -45,10 +45,11 @@
 #'
 #' @importFrom stats pchisq
 #' @importFrom Matrix Matrix Diagonal
+#' @importFrom Matrix sparseMatrix
 #' @export
 
 Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 300, tol = 1e-6, threshold = 1e-5) {
-  p <- (ncol(data) - 3)
+  p <- ncol(data) - 3
   times <- data$times
   status <- data$status
   N <- length(times)
@@ -63,9 +64,8 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
   K <- length(unique(clusters))
 
   if (p > 0) {
-    data_ini <- data.frame(times = data$times, status = data$status, clusters = clusters, as.matrix(X))
-    gamma_Cox <- Ml_Cox(data_ini)
-    gamma_0 <- gamma_Cox
+    data_ini <- data.frame(times = times, status = status, clusters = clusters, as.matrix(X))
+    gamma_0 <- Ml_Cox(data_ini)
   } else {
     gamma_0 <- numeric(0)
   }
@@ -73,11 +73,10 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
   u_0 <- rep(0, K)
   theta_0 <- 1
   theta_1 <- 2
+
   Z <- X
-  Q <- Matrix(0, nrow = N, ncol = K, sparse = TRUE)
-  for (i in 1:N) {
-    Q[i, clusters[i]] <- 1
-  }
+  Q <- sparseMatrix(i = 1:N, j = clusters, x = 1, dims = c(N, K))
+
   if (p > 0) {
     Y <- cbind(Z, Q)
     Y_t <- rbind(Matrix::t(Z), Matrix::t(Q))
@@ -106,7 +105,7 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
   }
 
   Mt <- Matrix::t(M)
-  v <- as.vector(colSums(as.matrix(M * W_diag)))
+  v <- as.vector(Matrix::colSums(M * W_diag))
   a <- numeric(N)
   a[status == 1] <- 1 / v[status == 1]
   A <- Diagonal(x = a)
@@ -116,31 +115,28 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
   lik_0 <- logLikelihood_1(status, M, W) + logLikelihood_2(u_0, theta_0, K)
   lik_1 <- lik_0 + 1
   iter <- 1
-  not_converged <- (abs(lik_1 - lik_0) >= tol) && (abs(theta_1 - theta_0) >= tol)
 
-  while (not_converged && iter <= max_iter) {
+  while ((abs(lik_1 - lik_0) >= tol) && (abs(theta_1 - theta_0) >= tol) && iter <= max_iter) {
     grad <- as.vector(D) - W %*% (M %*% a)
-    a_sq <- a^2
-    A2 <- Diagonal(x = a_sq)
+    A2 <- Diagonal(x = a^2)
     negHess <- W %*% (B - M %*% A2 %*% Mt %*% W)
 
     d <- c(rep(1, p), rep(1 / theta_0, K))
     M_pen <- Diagonal(x = d)
 
     V <- Y_t %*% negHess %*% Y + M_pen
-    inv_V <- solve(V)
+    rhs_vec <- as.numeric(Y_t %*% grad) - c(rep(0, p), (1 / theta_0) * u_0)
+    update_direction <- solve(as.matrix(V), rhs_vec)
 
-    update_direction <- inv_V %*% (Y_t %*% grad) - inv_V %*% c(rep(0, p), (1 / theta_0) * u_0)
+
     new_par <- c(gamma_0, u_0) + update_direction
-
-    if (p > 0) {
-      gamma_0 <- new_par[1:p]
-    }
+    if (p > 0) gamma_0 <- new_par[1:p]
     u_0 <- new_par[(p + 1):(p + K)]
 
     theta_1 <- theta_0
-    trace_term <- sum(diag(inv_V[(p + 1):(p + K), (p + 1):(p + K)]))
-    theta_0 <- as.numeric((t(u_0) %*% u_0) / (K - (trace_term / theta_0)))
+    invV_diag <- diag(solve(V)[(p + 1):(p + K), (p + 1):(p + K)])
+    trace_term <- sum(invV_diag)
+    theta_0 <- as.numeric((sum(u_0^2)) / (K - (trace_term / theta_0)))
 
     if (theta_0 < threshold) {
       theta_0 <- threshold
@@ -152,7 +148,8 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
     eta <- if (p > 0) as.vector(Z %*% gamma_0 + Q %*% u_0) else as.vector(Q %*% u_0)
     W_diag <- exp(eta)
     W <- Diagonal(x = W_diag)
-    v <- as.vector(colSums(as.matrix(M * W_diag)))
+
+    v <- as.vector(Matrix::colSums(M * W_diag))
     a <- numeric(N)
     a[status == 1] <- 1 / v[status == 1]
     A <- Diagonal(x = a)
@@ -161,13 +158,14 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
 
     lik_0 <- lik_1
     lik_1 <- logLikelihood_1(status, M, W) + logLikelihood_2(u_0, theta_0, K)
-    not_converged <- (abs(lik_1 - lik_0) >= tol) && (abs(theta_1 - theta_0) >= tol)
     iter <- iter + 1
   }
 
-  A22 <- inv_V[(p + 1):(p + K), (p + 1):(p + K)]
-  wald_stat <- as.numeric(t(u_0) %*% solve(as.matrix(A22)) %*% u_0)
-  df_eff <- K - sum(diag(A22)) / theta_0
+  V_inv <- solve(V)
+  A22 <- V_inv[(p + 1):(p + K), (p + 1):(p + K), drop = FALSE]
+  wald_stat <- as.numeric(t(u_0) %*% solve(A22, u_0))
+  trace_A22 <- sum(diag(as.matrix(A22)))
+  df_eff <- K - trace_A22 / theta_0
 
   if (theta_0 != threshold) {
     suppressWarnings({
