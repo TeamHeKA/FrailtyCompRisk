@@ -1,64 +1,55 @@
-#' Maximum Likelihood Estimation for the Cox Model
+#' Maximum Likelihood Estimation for the Cox Model (Optimized)
 #'
 #' This function computes the maximum likelihood estimates of the regression coefficients in the Cox proportional hazards model using Newton-Raphson iterations.
 #'
-#' @param data A data frame containing the columns:
-#'   - `times`: observed survival or censoring times,
-#'   - `status`: event indicators (1 if event occurred, 0 otherwise),
-#'   - Covariates in columns 4 to the end.
-#' @param max_iter Maximum number of iterations for the Newton-Raphson algorithm (default = 100).
-#' @param tol Convergence tolerance based on the Euclidean norm of coefficient changes (default = 1e-6).
-#'
-#' @return A numeric vector of estimated regression coefficients \code{beta}.
-#'
-#' @examples
-#' \dontrun{
-#' n <- 200
-#' G <- rep(1:10, each = 20)
-#' Z <- matrix(rnorm(n), ncol = 1)
-#' df <- simulate_data(G, Z, prop = 0.6, beta = c(0.5), theta = 0.01, cens = TRUE, pcens = 0.25)
-#' check_data_format(df)
-#' Ml_Cox(df)
-#' }
-#'
-#' @seealso \code{\link{simulate_data}}, \code{\link{check_data_format}}
+#' @param data A data frame with columns: `times`, `status`, and covariates starting from the 4th column.
+#' @param max_iter Maximum number of iterations (default = 100).
+#' @param tol Convergence tolerance for the Euclidean norm (default = 1e-6).
+#' @return A numeric vector of estimated regression coefficients.
 #' @export
-Ml_Cox <- function(data, max_iter=100, tol=1e-6)
-{
+Ml_Cox <- function(data, max_iter = 100, tol = 1e-6) {
   times <- data$times
   status <- data$status
-  X <- as.matrix(data[,4:(length(data[1,]))])
-
+  X <- as.matrix(data[, 4:ncol(data)])
   N <- length(times)
   p <- ncol(X)
   beta <- rep(0, p)
 
+  # Tri par temps croissants
   ord <- order(times)
-  ord_times <- times[ord]
-  ord_by_time_status <- status[ord]
-  X_bis <- X[ord, , drop=FALSE]
+  times <- times[ord]
+  status <- status[ord]
+  X <- X[ord, , drop = FALSE]
 
-  for (iter in 1:max_iter) {
-    eta <- as.vector(X_bis %*% beta)
+  for (iter in seq_len(max_iter)) {
+    eta <- drop(X %*% beta)
     exp_eta <- exp(eta)
 
-    loglik <- 0
-    U <- rep(0, p)
-    I <- matrix(0, p, p)
+    rev_exp_eta <- rev(cumsum(rev(exp_eta)))
+    rev_exp_eta_X <- apply(X * exp_eta, 2, function(col) rev(cumsum(rev(col))))
 
-    for (i in which(ord_by_time_status == 1)) {
-      R <- which(ord_times >= ord_times[i])
-
-      sum_exp_eta <- sum(exp_eta[R])
-      sum_exp_eta_X <- colSums(exp_eta[R] * X_bis[R, , drop=FALSE])
-      sum_exp_eta_XX <- t(X_bis[R, , drop=FALSE]) %*% (exp_eta[R] * X_bis[R, , drop=FALSE])
-
-      loglik <- loglik + (eta[i] - log(sum_exp_eta))
-      U <- U + (X_bis[i, ] - sum_exp_eta_X / sum_exp_eta)
-      I <- I + (sum_exp_eta_XX / sum_exp_eta) - (sum_exp_eta_X %*% t(sum_exp_eta_X)) / (sum_exp_eta^2)
+    # Calcule vectorisé de S2
+    X_eta <- X * sqrt(exp_eta)
+    S2_array <- array(0, dim = c(p, p, N))
+    for (i in seq_len(p)) {
+      for (j in seq_len(p)) {
+        S2_array[i, j, ] <- rev(cumsum(rev(X[, i] * X[, j] * exp_eta)))
+      }
     }
 
-    step <- solve(I, U)
+    I <- matrix(0, p, p)
+    U <- numeric(p)
+
+    for (i in which(status == 1)) {
+      S0 <- rev_exp_eta[i]
+      S1 <- rev_exp_eta_X[i, ]
+      S2 <- S2_array[, , i]
+
+      U <- U + (X[i, ] - S1 / S0)
+      I <- I + (S2 / S0) - (tcrossprod(S1) / S0^2)
+    }
+
+    step <- tryCatch(solve(I, U), error = function(e) rep(0, p))
     beta_new <- beta + step
 
     if (sqrt(sum(step^2)) < tol) {
@@ -67,5 +58,6 @@ Ml_Cox <- function(data, max_iter=100, tol=1e-6)
     beta <- beta_new
   }
 
-  return(beta = beta)
+  return(beta)
 }
+

@@ -2,39 +2,20 @@
 % Please edit documentation in R/Ml_Cox.R
 \name{Ml_Cox}
 \alias{Ml_Cox}
-\title{Maximum Likelihood Estimation for the Cox Model}
+\title{Maximum Likelihood Estimation for the Cox Model (Optimized)}
 \usage{
 Ml_Cox(data, max_iter = 100, tol = 1e-06)
 }
 \arguments{
-\item{data}{A data frame containing the columns:
-\itemize{
-\item \code{times}: observed survival or censoring times,
-\item \code{status}: event indicators (1 if event occurred, 0 otherwise),
-\item Covariates in columns 4 to the end.
-}}
+\item{data}{A data frame with columns: \code{times}, \code{status}, and covariates starting from the 4th column.}
 
-\item{max_iter}{Maximum number of iterations for the Newton-Raphson algorithm (default = 100).}
+\item{max_iter}{Maximum number of iterations (default = 100).}
 
-\item{tol}{Convergence tolerance based on the Euclidean norm of coefficient changes (default = 1e-6).}
+\item{tol}{Convergence tolerance for the Euclidean norm (default = 1e-6).}
 }
 \value{
-A numeric vector of estimated regression coefficients \code{beta}.
+A numeric vector of estimated regression coefficients.
 }
 \description{
 This function computes the maximum likelihood estimates of the regression coefficients in the Cox proportional hazards model using Newton-Raphson iterations.
-}
-\examples{
-\dontrun{
-n <- 200
-G <- rep(1:10, each = 20)
-Z <- matrix(rnorm(n), ncol = 1)
-df <- simulate_data(G, Z, prop = 0.6, beta = c(0.5), theta = 0.01, cens = TRUE, pcens = 0.25)
-check_data_format(df)
-Ml_Cox(df)
-}
-
-}
-\seealso{
-\code{\link{simulate_data}}, \code{\link{check_data_format}}
 }

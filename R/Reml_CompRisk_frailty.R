@@ -126,7 +126,7 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
 
     V <- Y_t %*% negHess %*% Y + M_pen
     rhs_vec <- as.numeric(Y_t %*% grad) - c(rep(0, p), (1 / theta_0) * u_0)
-    update_direction <- solve(as.matrix(V), rhs_vec)
+    update_direction <- solve(V, rhs_vec)
 
 
     new_par <- c(gamma_0, u_0) + update_direction

@@ -46,7 +46,7 @@
 #' table(df$status)
 #' }
 #'
-#' @importFrom stats rexp rnorm runif
+#' @importFrom stats rexp rnorm runif uniroot
 #' @export
 
 
