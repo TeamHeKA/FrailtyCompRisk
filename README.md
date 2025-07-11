@@ -79,9 +79,9 @@ You must specify the method:
 - Standard Cox model without frailty (`"Cox"`)
 
 You must submit a data frame with at least 3 columns:
--times: the observed time,
--status: 0 for right-censoring, i in [1,n] otherwise, where i is the cause of failure,
--clusters: cluster/group indicator. If there is no cluster, clusters=rep(1,n), with n the size sample.
+- times: the observed time,
+- status: 0 for right-censoring, i in [1,n] otherwise, where i is the cause of failure,
+- clusters: cluster/group indicator. If there is no cluster, clusters=rep(1,n), with n the size sample.
 
 You also have to specify whether you want to take into account for a center effect on censoring (cluster_censoring), if you chose `method = "CompRisk_frailty"`.
 You may also specify a threshold of convergence, a threshold for the variance of center effect frailty (in the case it tends to zero and it might be negligible, hence the threshold) and a maximum number of iterations.
