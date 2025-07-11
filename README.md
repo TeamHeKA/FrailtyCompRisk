@@ -6,7 +6,9 @@
 [![License: GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
-The goal of **`multicenterCompRisk`** is to provide tools for **competing risks survival analysis** in **multicenter studies**, accounting for **unobserved heterogeneity** (frailty) at the center level.
+The goal of **`multicenterCompRisk`** is to provide tools for **competing risks survival analysis** in **multicenter studies**, accounting for **unobserved heterogeneity** (frailty) at the center level as proposed in the following article:
+
+Katsahian S, Resche-Rigon M, Chevret S, Porcher R. Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution. *Stat Med*. 2006 Dec 30;25(24):4267-78. doi: [`10.1002/sim.2684`]{https://onlinelibrary.wiley.com/doi/10.1002/sim.2684}. PMID: [`16960919.`]{https://pubmed.ncbi.nlm.nih.gov/16960919/}
 
 This package is particularly useful for statisticians and epidemiologists analyzing time-to-event data where individuals are nested within centers (e.g., hospitals or clinics), and where multiple causes of failure may occur.
 
