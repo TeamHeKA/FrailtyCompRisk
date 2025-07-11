@@ -25,6 +25,8 @@
 #' @param cluster_censoring Logical. If \code{TRUE}, adjusts for cluster-specific censoring. Only applicable when \code{method = "CompRisk_frailty"} (default = \code{FALSE}).
 #' @param max_iter Maximum number of iterations for the selected model estimation (default = 300).
 #' @param tol Convergence tolerance (default = 1e-6).
+#' @param threshold Lower bound for the frailty variance parameter \eqn{\theta}. If the estimated value falls below this threshold, frailty is considered negligible (default = 1e-5).
+
 #'
 #' @return A list of results from the selected estimation method, typically including estimated regression coefficients, frailty variance (if applicable), random effects (if applicable), and a p-value testing the frailty variance.
 #' Returns \code{NULL} in case of error.
@@ -57,7 +59,7 @@
 #'
 #' @export
 
-Parameters_estimation <- function(data,method = "CompRisk_frailty",cluster_censoring = F,max_iter = 300, tol = 1e-6)
+Parameters_estimation <- function(data,method = "CompRisk_frailty",cluster_censoring = F,max_iter = 300, tol = 1e-6,threshold = 1e-6)
 {
   if (!(method %in% c("CompRisk_frailty","CompRisk","Cox_Frailty","Cox")))
   {
@@ -72,28 +74,28 @@ Parameters_estimation <- function(data,method = "CompRisk_frailty",cluster_censo
 
   if (method == "CompRisk_frailty")
   {
-    res = tryCatch(Reml_CompRisk_frailty(data,cluster_censoring),
+    res = tryCatch(Reml_CompRisk_frailty(data,cluster_censoring,max_iter = 300, tol = 1e-6,threshold = 1e-6),
                    error = function(e) {
                      message(e$message)
                      return(NULL)})
   }
   if (method == "CompRisk")
   {
-    res = tryCatch(Ml_CompRisk(data),
+    res = tryCatch(Ml_CompRisk(data,max_iter = 300, tol = 1e-6),
                    error = function(e) {
                      message(e$message)
                      return(NULL)})
   }
   if (method == "Cox_frailty")
   {
-    res = tryCatch(Reml_Cox_frailty(data),
+    res = tryCatch(Reml_Cox_frailty(data,max_iter = 300, tol = 1e-6),
                    error = function(e) {
                      message(e$message)
                      return(NULL)})
   }
   if (method == "Cox")
   {
-    res = tryCatch(Ml_Cox(data),
+    res = tryCatch(Ml_Cox(data,max_iter = 300, tol = 1e-6),
                    error = function(e) {
                      message(e$message)
                      return(NULL)})

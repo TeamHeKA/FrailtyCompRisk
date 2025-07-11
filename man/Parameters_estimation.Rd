@@ -9,7 +9,8 @@ Parameters_estimation(
   method = "CompRisk_frailty",
   cluster_censoring = F,
   max_iter = 300,
-  tol = 1e-06
+  tol = 1e-06,
+  threshold = 1e-06
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ Parameters_estimation(
 \item{max_iter}{Maximum number of iterations for the selected model estimation (default = 300).}
 
 \item{tol}{Convergence tolerance (default = 1e-6).}
+
+\item{threshold}{Lower bound for the frailty variance parameter \eqn{\theta}. If the estimated value falls below this threshold, frailty is considered negligible (default = 1e-5).}
 }
 \value{
 A list of results from the selected estimation method, typically including estimated regression coefficients, frailty variance (if applicable), random effects (if applicable), and a p-value testing the frailty variance.
