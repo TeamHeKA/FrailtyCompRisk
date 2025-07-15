@@ -37,9 +37,9 @@ pak::pak("DELMASben/multicenterCompRisk")
 devtools::install_github("DELMASben/multicenterCompRisk")
 ```
 
-## Usage
+## 📌 Usage
 
-### Data simulation
+### 🧪 Data simulation
 
 You can generate simple datasets following the competing risks model with center effect frailty with the code below :
 
@@ -68,7 +68,7 @@ tau=1 #Variance of center effect on censoring
 data<-simulate_data(G,Z,prop,beta,theta,cens,pcens,tau)
 ```
 
-### Parameters estimation
+### 📈 Parameters estimation
 
 You can estimate the parameters of the model by using the function **Parameters_estimation**.
 
@@ -102,19 +102,19 @@ results$p_value #(only for method "CompRisk_frailty" and "Cox_frailty") p_value 
 
 ```
 
-## Example on real data
+## 🧠 Example on real data
 
 This is under development...
 
-## Contact
+## 📬 Contact
 
 For any questions, issues, or suggestions, please open an issue on GitHub.
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 Thanks to Lucas Ducrot and Benjamin Delmas for their contribution.
 
-## References
+## 🧩 References
 
 If you use this package in your research, please cite the following article:
 

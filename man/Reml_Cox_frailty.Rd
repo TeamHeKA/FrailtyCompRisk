@@ -4,7 +4,7 @@
 \alias{Reml_Cox_frailty}
 \title{Cox Model with Random Frailty (REML Estimation)}
 \usage{
-Reml_Cox_frailty(data, max_iter = 300, tol = 1e-06)
+Reml_Cox_frailty(data, max_iter = 300, tol = 1e-06, threshold = 1e-05)
 }
 \arguments{
 \item{data}{A data frame containing:
@@ -18,6 +18,8 @@ Reml_Cox_frailty(data, max_iter = 300, tol = 1e-06)
 \item{max_iter}{Maximum number of Newton-Raphson iterations (default = 300).}
 
 \item{tol}{Tolerance for convergence (default = 1e-6).}
+
+\item{threshold}{Lower bound for the frailty variance parameter \eqn{\theta}. If the estimated value falls below this threshold, frailty is considered negligible (default = 1e-5).}
 }
 \value{
 A list with the following elements:

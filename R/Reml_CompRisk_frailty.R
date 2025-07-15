@@ -65,7 +65,7 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
 
   if (p > 0) {
     data_ini <- data.frame(times = times, status = status, clusters = clusters, as.matrix(X))
-    gamma_0 <- Ml_Cox(data_ini)
+    gamma_0 <- Ml_Cox(data_ini)$beta
   } else {
     gamma_0 <- numeric(0)
   }

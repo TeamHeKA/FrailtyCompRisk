@@ -136,15 +136,19 @@ Multi_tests = function(N_test,
       G,
       Z,
       prop = 0.6,
-      beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
-      theta = 0.05,
+      beta = c(),
+      theta = 0.6,
       cens = TRUE,
       pcens = 0.25,
       tau = 0.5
     )
+    if (n_cov > 0){
+      X = as.matrix(df[,4:(n_cov + 3)])}
+    else{
+      X = matrix(0,nrow = n,ncol = 0)}
     ind <- which(df$status > 1)
     df$status[ind] <- 1
-    df = data.frame(times = df$times,status = df$status,clusters = df$clusters,as.matrix(df[,4:(n_cov + 3)]))
+    df = data.frame(times = df$times,status = df$status,clusters = df$clusters,X)
     res <- tryCatch(
       Reml_Cox_frailty(df),
       error = function(e) {
@@ -165,9 +169,9 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-# M = Multi_tests(N_test = 200,n_cov = 8,n_cluster = 20,n_per_cluster = 100,a1 = 0,b1 = 1)
+#M = Multi_tests(N_test = 50,n_cov = 0,n_cluster = 20,n_per_cluster = 15,a1 = 0,b1 = 1)
 
-# m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.05))
+#m = compute_mean_mse(M,c(0.6))
 ```
 
 

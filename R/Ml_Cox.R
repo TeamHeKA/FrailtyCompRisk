@@ -58,6 +58,6 @@ Ml_Cox <- function(data, max_iter = 100, tol = 1e-6) {
     beta <- beta_new
   }
 
-  return(beta)
+  return(list(beta = beta))
 }
 

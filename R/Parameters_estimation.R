@@ -61,9 +61,9 @@
 
 Parameters_estimation <- function(data,method = "CompRisk_frailty",cluster_censoring = F,max_iter = 300, tol = 1e-6,threshold = 1e-6)
 {
-  if (!(method %in% c("CompRisk_frailty","CompRisk","Cox_Frailty","Cox")))
+  if (!(method %in% c("CompRisk_frailty","CompRisk","Cox_frailty","Cox")))
   {
-    stop("The method chosen must be : 'CompRisk_frailty','CompRisk','Cox_Frailty' or 'Cox'.")
+    stop("The method chosen must be : 'CompRisk_frailty','CompRisk','Cox_frailty' or 'Cox'.")
   }
   if (!(check_data_format(data)) == TRUE)
   {
