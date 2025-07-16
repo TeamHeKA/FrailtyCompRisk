@@ -109,7 +109,7 @@ where:
 - N: sample size
 - T: the number of iterations made, T < max_iter, where max_iter is a parameter you can choose
 - p: the number of covariables
-- K: the number of cluster
+- K: the number of clusters
 
 ## 🧠 Example on real data
 

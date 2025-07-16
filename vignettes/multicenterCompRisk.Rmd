@@ -17,3 +17,39 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(multicenterCompRisk)
 ```
+
+# Package multicenterCompRisk
+
+## Overview
+
+The package **multicenterCompRisk** is originally designed for statisticians and epidemiologists in order to analyze time-to-event data where individuals are nested within centers (e.g., hospitals or clinics), and where multiple causes of failure may occur.
+
+The package is build upon the random-effects model for the subdistribution hazard presented in "Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution" [Katsahian S, Resche-Rigon M, Chevret S, Porcher R.].
+
+## The Model:
+
+Consider that observations are $N$ replicates of a time to event $T$ , a cause of event $\epsilon$, and a covariate $Z$, $(T_i , \epsilon_i , Z_i )_{i=1,...,N}$ . Let $\epsilon=1$ denote the failure cause of interest.
+The CIF of failure from cause 1 is defined by $F_1(t)= Pr(T \le t, \epsilon=1)$.Fine and Gray proposed to model the effect of the covariate Z on the probability of failure from cause 1 through a proportional hazards model for the hazard associated with $F_1(t)$, called the subdistribution hazard and
+defined by
+$$
+\alpha_1(t) = \frac{\frac{dF_1(t)}{dt}}{1 - F_1(t)}
+$$
+The model relates the subdistribution hazard of individual $i (=1, . . . , N)$, irrespective of his(her)
+cluster, to his(her) covariate value $Z_i$ using a proportional hazards formulation, as follows:
+$$
+\alpha_{1,k}(t | Z_i, u) = \alpha_{1,0}(t) e^{(Z_i^\top \beta)}
+$$
+where $\alpha_{1,0}(t)$ is an unspecified non-negative function, and $\beta$ is the effect of $Z$ to be estimated. In other words, this assumes the $N$ replicates to be independent.
+To handle clustered data, an additional random effect is incorporated. Let $ k(i) \in (1, . . . , K)$ denote the cluster to which subject $i$ belongs. The subdistribution hazard of subject $i$ can then be expressed as
+
+$$
+\alpha_{1,k}(t | Z_i, u) = \alpha_{1,0}(t) e^{(Z_i^\top \beta \ + \ u_{k(i)})}
+$$
+
+where the random effects $u_k$ are independent Gaussian random variables with mean $0$ and variance $\theta$.
+
+## Method
+
+The package uses a Newton-Raphson on a log-likelihood to determine $\beta$,$\theta$ and $u_k$.
+
+## 
