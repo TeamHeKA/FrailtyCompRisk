@@ -103,7 +103,8 @@ results$p_value #(only for method "CompRisk_frailty" and "Cox_frailty") p_value 
 ```
 ### Complexity
 
-The complexity of this algorithm is $\mathcal{O}\left( \text{max\_iter} \cdot \left( N^2 + Np + NK + (p+K)^3 \right) \right)$
+The complexity of this algorithm is O(N² + Np + NK + (p + K)³)
+
 where:
 - N: sample size
 - T: the number of iterations made, T < max_iter, where max_iter is a parameter you can choose
