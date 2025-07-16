@@ -50,6 +50,6 @@ where the random effects $u_k$ are independent Gaussian random variables with me
 
 ## Method
 
-The package uses a Newton-Raphson on a log-likelihood to determine $\beta$,$\theta$ and $u_k$.
+The package uses a Newton-Raphson method on a log-likelihood to determine $\beta$,$\theta$ and $u_k$.
 
 ## 

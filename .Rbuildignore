@@ -1,3 +1,5 @@
 ^Package\.Rproj$
 ^\.Rproj\.user$
 ^multicenterCompRisk\.Rproj$
+^doc$
+^Meta$
