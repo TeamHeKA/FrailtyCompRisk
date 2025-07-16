@@ -3,8 +3,11 @@ title: "multicenterCompRisk"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{multicenterCompRisk}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r, include = FALSE}
@@ -22,34 +25,287 @@ library(multicenterCompRisk)
 
 ## Overview
 
-The package **multicenterCompRisk** is originally designed for statisticians and epidemiologists in order to analyze time-to-event data where individuals are nested within centers (e.g., hospitals or clinics), and where multiple causes of failure may occur.
+The package **multicenterCompRisk** is originally designed for
+statisticians and epidemiologists in order to analyze time-to-event data
+where individuals are nested within centers (e.g., hospitals or
+clinics), and where multiple causes of failure may occur.
 
-The package is build upon the random-effects model for the subdistribution hazard presented in "Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution" [Katsahian S, Resche-Rigon M, Chevret S, Porcher R.].
+The package is build upon the random-effects model for the
+subdistribution hazard presented in "Analysing multicentre competing
+risks data with a mixed proportional hazards model for the
+subdistribution" [Katsahian S, Resche-Rigon M, Chevret S, Porcher R.].
 
 ## The Model:
 
-Consider that observations are $N$ replicates of a time to event $T$ , a cause of event $\epsilon$, and a covariate $Z$, $(T_i , \epsilon_i , Z_i )_{i=1,...,N}$ . Let $\epsilon=1$ denote the failure cause of interest.
-The CIF of failure from cause 1 is defined by $F_1(t)= Pr(T \le t, \epsilon=1)$.Fine and Gray proposed to model the effect of the covariate Z on the probability of failure from cause 1 through a proportional hazards model for the hazard associated with $F_1(t)$, called the subdistribution hazard and
-defined by
-$$
+Consider $N$ observations of a time-to-event variable $T$, a cause of
+event $\epsilon$, and a covariate $Z$:
+$(T_i, \epsilon_i, Z_i)_{i=1,\dots,N}$. Let $\epsilon = 1$ denote the
+cause of failure of interest.
+
+The cumulative incidence function (CIF) for cause 1 is defined as: $$
+F_1(t)=P(T \le t,\epsilon = 1)
+$$ Fine and Gray proposed a proportional hazards model for the
+subdistribution hazard associated with $F_1(t)$, defined as: $$
 \alpha_1(t) = \frac{\frac{dF_1(t)}{dt}}{1 - F_1(t)}
+$$ The subdistribution hazard for individual $i$ is modeled as:
+
 $$
-The model relates the subdistribution hazard of individual $i (=1, . . . , N)$, irrespective of his(her)
-cluster, to his(her) covariate value $Z_i$ using a proportional hazards formulation, as follows:
-$$
-\alpha_{1,k}(t | Z_i, u) = \alpha_{1,0}(t) e^{(Z_i^\top \beta)}
-$$
-where $\alpha_{1,0}(t)$ is an unspecified non-negative function, and $\beta$ is the effect of $Z$ to be estimated. In other words, this assumes the $N$ replicates to be independent.
-To handle clustered data, an additional random effect is incorporated. Let $ k(i) \in (1, . . . , K)$ denote the cluster to which subject $i$ belongs. The subdistribution hazard of subject $i$ can then be expressed as
+\alpha_{1}(t | Z_i, u) = \alpha_{1,0}(t) e^{(Z_i^\top \beta)}
+$$ where:
+
+-   $\alpha_{1,0}(t)$ is an unspecified baseline subdistribution hazard,
+
+-   $\beta$ is the vector of covariate effects.
+
+This model assumes that all individuals are independent. To account for
+clustering (e.g., patients within centers), a random effect is added:
+
+Let $k(i) \in {1, \dots, K}$ be the cluster (center) to which subject
+$i$ belongs. Then the subdistribution hazard becomes:
 
 $$
 \alpha_{1,k}(t | Z_i, u) = \alpha_{1,0}(t) e^{(Z_i^\top \beta \ + \ u_{k(i)})}
-$$
-
-where the random effects $u_k$ are independent Gaussian random variables with mean $0$ and variance $\theta$.
+$$ where $u_k \sim \mathcal{N}(0, \theta)$ are independent Gaussian
+random effects for each cluster $k$, with variance $\theta$.
 
 ## Method
 
-The package uses a Newton-Raphson method on a log-likelihood to determine $\beta$,$\theta$ and $u_k$.
+The package uses a restricted maximum likelihood (REML) or maximum
+likelihood (ML) approach to estimate the parameters $\beta$, $\theta$,
+and $u_k$. The estimation relies on a Newton-Raphson optimization
+routine applied to the (restricted) log-likelihood.
 
-## 
+## Features
+
+The package provides several main functions, $\\$
+`Reml_CompRisk_frailty()` Estimates $\beta$, $\theta$, and $u_k$ under
+the subdistribution hazard model with random effects. Also returns the
+$p$-value for testing $H_0: \theta = 0$.
+
+`Reml_CompRisk_frailty()` can take 5 arguments:
+
+1.  `data` (mandatory), a data frame with the following columns:
+
+    -   `times` : Observed times to event or censoring.
+
+    -   `status` : Event type: 0 = censored, 1 = cause of interest, \>1
+        = other competing risks.
+
+    -   `clusters` : Cluster membership (e.g., centers or subjects).
+
+    -   `covariates` : (optional) Columns from the 4th onward are used
+        as covariates.
+
+2.  `cluster_censoring` (optional): Logical. If TRUE, accounts for
+    center-specific censoring using a frailty model on censoring times.
+    Default is FALSE.
+
+3.  `max_iter` (optional): Maximum number of iterations for the
+    Newton-Raphson algorithm (default = 300).
+
+4.  `tol` (optional): Convergence tolerance for the likelihood and
+    frailty variance (default = 1e-6).
+
+5.  `threshold` (optional): Lower bound for the frailty variance
+    parameter $\theta$. If the estimated value falls below this
+    threshold, frailty is considered negligible (default = 1e-5).
+
+$\\$
+
+`Ml_CompRisk()` Estimates $\beta$ for the subdistribution hazard model
+without random effects.
+
+`Ml_CompRisk()` can take 3 arguments:
+
+1.  `data` (mandatory), a data frame with the following columns:
+
+    -   `times` : Observed times to event or censoring.
+
+    -   `status` : Event type: 0 = censored, 1 = cause of interest, \>1
+        = other competing risks.
+
+    -   `covariates` : (optional) Columns from the 3th onward are used
+        as covariates.
+
+2.  `max_iter` (optional): Maximum number of iterations for the
+    Newton-Raphson algorithm (default = 100).
+
+3.  `tol` (optional): Convergence tolerance for the likelihood and
+    frailty variance (default = 1e-6).
+
+$\\$
+
+`Reml_Cox_frailty()` Estimates $\beta$, $\theta$, and $u_k$ under a Cox
+model with random effects, and provides a $p_{value}$ for testing
+$\theta = 0$.
+
+`Reml_Cox_frailty()` can take 4 arguments:
+
+1.  `data` (mandatory), a data frame with the following columns:
+
+    -   `times` : Observed times to event or censoring.
+
+    -   `status` : Event type: 0 = censored, 1 = cause of interest
+
+    -   `clusters` : Cluster membership (e.g., centers or subjects).
+
+    -   `covariates` : (optional) Columns from the 4th onward are used
+        as covariates.
+
+2.  `max_iter` (optional): Maximum number of iterations for the
+    Newton-Raphson algorithm (default = 300).
+
+3.  `tol` (optional): Convergence tolerance for the likelihood and
+    frailty variance (default = 1e-6).
+
+4.  `threshold` (optional): Lower bound for the frailty variance
+    parameter $\theta$. If the estimated value falls below this
+    threshold, frailty is considered negligible (default = 1e-5).
+
+$\\$
+
+`Ml_Cox()` Estimates $\beta$ under a standard Cox proportional hazards
+model.
+
+`Ml_Cox()` can take 3 arguments:
+
+1.  `data` (mandatory), a data frame with the following columns:
+
+    -   `times` : Observed times to event or censoring.
+
+    -   `status` : Event type: 0 = censored, 1 = cause of interest
+
+    -   `covariates` : (optional) Columns from the 3th onward are used
+        as covariates.
+
+2.  `max_iter` (optional): Maximum number of iterations for the
+    Newton-Raphson algorithm (default = 100).
+
+3.  `tol` (optional): Convergence tolerance for the likelihood and
+    frailty variance (default = 1e-6).
+
+`Parameters_estimation()` Encapsulates the four previous methods into
+one unified function.
+
+`Parameters_estimation()` can take 6 arguments:
+
+1.  `data` (mandatory), a data frame with the following columns:
+
+    -   `times` : Observed times to event or censoring.
+
+    -   `status` : Event type: 0 = censored, 1 = cause of interest, \>1
+        = other competing risks.
+
+    -   `clusters` : Cluster membership (e.g., centers or subjects).
+
+    -   `covariates` : (optional) Columns from the 4th onward are used
+        as covariates.
+
+2.  `method` (optional):
+
+    -   "CompRisk_frailty" (default): Competing risks model for cause 1
+        with shared frailty.
+    -   "CompRisk": Competing risks model for cause 1 without frailty.
+    -   "Cox_frailty": Cox proportional hazards model with shared
+        frailty.
+    -   "Cox": Standard Cox proportional hazards model.
+
+3.  `cluster_censoring` (optional): Logical. If TRUE, accounts for
+    center-specific censoring using a frailty model on censoring times.
+    Default is FALSE.
+
+4.  `max_iter` (optional): Maximum number of iterations for the
+    Newton-Raphson algorithm (default = 100 or 300, depends on the
+    method chosen).
+
+5.  `tol` (optional): Convergence tolerance for the likelihood and
+    frailty variance (default = 1e-6).
+
+6.  `threshold` (optional): Lower bound for the frailty variance
+    parameter $\theta$. If the estimated value falls below this
+    threshold, frailty is considered negligible (default = 1e-5).
+
+$\\$
+
+`simulate_data()` Simulates clustered time-to-event data with competing
+risks.
+
+`simulate_data()` can take 8 arguments:
+
+1.  `G` : a vector of group or cluster identifiers (length N, where N is
+    the size sample). Each value indicates which cluster the individual
+    belongs to.
+
+2.  `Z` : a matrix of covariates (dimensions N x p), where p is the size
+    of the vector describing an individual). Can be set to Matrix(0,0,N)
+    if no covariates are used.
+
+3.  `prop` : proportion of individuals susceptible to cause 1 (default:
+    0.6).
+
+4.  `beta` : a numeric vector of regression coefficients, one per
+    covariate (p).
+
+5.  `theta` : variance of the shared frailty term for event times (cause
+    1).
+
+6.  `cens` : logical, indicating whether censoring should be simulated
+    (default: FALSE).
+
+7.  `pcens` : target censoring proportion (default: 0.25).
+
+8.  `tau` : variance of the shared frailty term for censoring times
+    (default: 0). $\\$
+
+`check_data_format()` Verifies input data structure and formatting.
+
+`check_data_format()` can only take 1 argument, a data frame. $\\$
+
+## Examples
+
+```{r}
+set.seed(123)
+
+n_cov = 2
+n_per_cluster = 15
+n_cluster = 20
+n = n_cluster * n_per_cluster
+
+G = rep(1:n_cluster, each = n_per_cluster)
+Z = matrix(rnorm(n*n_cov,0,1),ncol = n_cov)
+
+df = simulate_data(G,Z,prop = 0.6,beta = c(1,1.2),theta = 0.6,cens = TRUE)
+
+ #Estimate using REML with frailty
+
+res <- Reml_CompRisk_frailty(df)
+
+ #Print estimated coefficients
+
+res$beta
+res$theta
+```
+
+## Computational Complexity
+
+The algorithm involves computing weighted matrices and solving penalized
+systems in each iteration. For $N$ individuals, $K$ clusters and $p$
+covariables describing each individual:
+
+-   Sparse matrix multiplication and integration steps: \~
+    $\mathcal{O}(N^2)$
+
+-   Newton-Raphson updates (inversion of Fisher information matrix): \~
+    $\mathcal{O}((p + K)^3)$ in the worst case
+
+In total, the complexity of the algorithm is
+\~$\mathcal{O}(N^2 + Np + NK + (p + K)^3)$ in the worst case.
+
+However, the implementation uses sparse matrices (Matrix package) to
+significantly reduce practical computational cost.
+
+## References
+
+Katsahian S, Resche-Rigon M, Chevret S, Porcher R. (2006). *Analysing
+multicentre competing risks data with a mixed proportional hazards model
+for the subdistribution.* *Statistics in Medicine*, 25(26), 4267–4278.
