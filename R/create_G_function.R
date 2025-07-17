@@ -9,13 +9,7 @@
 #' @param G_vals A numeric vector of the same length as `unique_times`, corresponding to estimated values of the survival function at each time.
 #'
 #' @return A function `G(t)` that can be evaluated on a numeric vector of time points.
-#' @examples
-#' unique_times <- c(1, 2, 3, 5)
-#' G_vals <- c(1.0, 0.9, 0.85, 0.75)
-#' G_fun <- create_G_function(unique_times, G_vals)
-#' G_fun(c(0, 2, 4, 6))  # Returns: 1.0, 0.9, 0.85, 0.75
-#'
-#' @export
+
 create_G_function <- function(unique_times, G_vals)
 {
   function(t) {

@@ -19,18 +19,3 @@ A numeric vector of estimated survival probabilities at each unique time.
 \description{
 Computes the Kaplan-Meier estimator of the censoring distribution at given time points.
 }
-\examples{
-\dontrun{
-n_cov <- 1
-n_cluster <- 5
-n_per_cluster <- 100
-n <- n_cluster * n_per_cluster
-G <- rep(1:n_cluster, each = n_per_cluster)
-Z <- matrix(runif(n * n_cov), ncol = n_cov)
-df <- simulate_data(G, Z, prop = 0.6, beta = c(0), theta = 0.01, cens = TRUE, pcens = 0.25, tau = 0)
-check_data_format(df)
-unique_times <- sort(unique(df$times))
-KM <- KaplanMeier_Censoring_vectorized(df$times, df$status, unique_times)
-}
-
-}

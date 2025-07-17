@@ -39,14 +39,14 @@ check_data_format <- function(df)
   if (!is.data.frame(df)) {
     stop("The argument must be a data frame.")
   }
-  
+
   n_cols <- ncol(df)
   if (n_cols < 3) {
     stop(
       "The data frame must contain at least 3 columns:\n - 'times': the observed time,\n - 'status': 0 for right-censoring, i in [1,n] otherwise, where i is the cause of failure,\n - 'clusters': cluster/group indicator."
     )
   }
-  
+
   col_names <- colnames(df)
   expected_names <- c("times", "status", "clusters")
   for (i in 1:3) {
@@ -54,7 +54,7 @@ check_data_format <- function(df)
       stop(paste0("Column ", i, " must be named '", expected_names[i], "'."))
     }
   }
-  
+
   if (anyNA(df$times))
     stop("Some values in 'times' are missing (NA).")
   if (anyNA(df$status))
@@ -63,8 +63,8 @@ check_data_format <- function(df)
     stop("Some values in 'clusters' are missing (NA).")
   if (n_cols > 3) {
     covariate_cols <- df[, 4:n_cols, drop = FALSE]
-    if (!all(sapply(covariate_cols, is.numeric))) {
-      stop("All covariates (columns 4 to end) must be numeric.")
+    if (!all(sapply(covariate_cols, is.numeric)) || any(is.na(covariate_cols))) {
+      stop("All covariates (columns 4 to end) must be numeric and contain no missing values (NA).")
     }
   }
   return(TRUE)

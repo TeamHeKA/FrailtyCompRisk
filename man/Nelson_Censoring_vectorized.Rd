@@ -24,19 +24,3 @@ A numeric vector of estimated censoring survival probabilities for each individu
 Computes the estimated censoring survival probabilities using a Nelson-Aalen-type estimator,
 accounting for shared frailty through a cluster-specific random effect.
 }
-\examples{
-\dontrun{
-n_cov <- 1
-n_cluster <- 5
-n_per_cluster <- 100
-n <- n_cluster * n_per_cluster
-G <- rep(1:n_cluster, each = n_per_cluster)
-Z <- matrix(runif(n * n_cov), ncol = n_cov)
-df <- simulate_data(G, Z, prop = 0.6, beta = c(0), theta = 0.01, cens = TRUE, pcens = 0.25, tau = 0)
-check_data_format(df)
-unique_times <- sort(unique(df$times))
-u_bis <- rnorm(n_cluster, 0, 0.1)
-S_C <- Nelson_Censoring_vectorized(df$times, unique_times, df$status, df$clusters, u_bis)
-}
-
-}

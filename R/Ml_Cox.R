@@ -10,9 +10,13 @@
 Ml_Cox <- function(data, max_iter = 100, tol = 1e-6) {
   times <- data$times
   status <- data$status
-  X <- as.matrix(data[, 4:ncol(data)])
+  if (("clusters" %in% names(data)) && ncol(data) == 3){stop("With no covariables, there is nothing to estimate")}
+  if (!("clusters" %in% names(data)) && ncol(data) == 2){stop("With no covariables, there is nothing to estimate")}
+  if (("clusters" %in% names(data)) && ncol(data) > 3){X <- as.matrix(data[, 4:ncol(data)])}
+  if (!("clusters" %in% names(data)) && ncol(data) > 2){X <- as.matrix(data[, 3:ncol(data)])}
   N <- length(times)
   p <- ncol(X)
+
   beta <- rep(0, p)
 
   # Tri par temps croissants

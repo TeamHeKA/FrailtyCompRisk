@@ -140,7 +140,7 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
 
     if (theta_0 < threshold) {
       theta_0 <- threshold
-      gamma_0 <- Ml_CompRisk(data)
+      gamma_0 <- Ml_CompRisk(data)$beta
       u_0 <- rep(0, K)
       break
     }

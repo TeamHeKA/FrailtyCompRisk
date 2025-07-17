@@ -20,18 +20,8 @@
 #' and sums this across all such individuals.
 #'
 #' @seealso [compute_M_optimized()], [Matrix::Matrix-class]
-#'
-#' @examples
-#' \dontrun{
-#' library(Matrix)
-#' N <- 100
-#' status <- sample(0:2, N, replace = TRUE)
-#' M <- matrix(runif(N^2), nrow = N)
-#' W <- Matrix::Diagonal(N, x = runif(N))
-#' logLikelihood_1(status, M, W)
-#' }
-#'
-#' @export
+
+
 logLikelihood_1 = function(status, M, W)
 {
   loglik <- 0

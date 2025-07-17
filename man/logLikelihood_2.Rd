@@ -24,10 +24,3 @@ associated with the random effects (frailty terms) in a mixed-effects model.
 The penalty is derived from the Gaussian assumption on the random effects and
 involves both the dimension of the random effects vector and the variance parameter \code{theta}.
 }
-\examples{
-u <- rnorm(5, 0, 1)
-theta <- 0.5
-K <- length(u)
-logLikelihood_2(u, theta, K)
-
-}

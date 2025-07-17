@@ -30,17 +30,6 @@ For each individual \code{i} such that \code{status[i] == 1}, the function compu
 }
 and sums this across all such individuals.
 }
-\examples{
-\dontrun{
-library(Matrix)
-N <- 100
-status <- sample(0:2, N, replace = TRUE)
-M <- matrix(runif(N^2), nrow = N)
-W <- Matrix::Diagonal(N, x = runif(N))
-logLikelihood_1(status, M, W)
-}
-
-}
 \seealso{
 \code{\link[=compute_M_optimized]{compute_M_optimized()}}, \link[Matrix:Matrix-class]{Matrix::Matrix}
 }

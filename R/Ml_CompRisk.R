@@ -38,7 +38,10 @@ Ml_CompRisk <- function(data, max_iter = 100, tol = 1e-6)
 {
   times <- data$times
   status <- data$status
-  X <- as.matrix(data[,4:length(data[1,])])
+  if (("clusters" %in% names(data)) && ncol(data) == 3){stop("With no covariables, there is nothing to estimate")}
+  if (!("clusters" %in% names(data)) && ncol(data) == 2){stop("With no covariables, there is nothing to estimate")}
+  if (("clusters" %in% names(data)) && ncol(data) > 3){X <- as.matrix(data[, 4:ncol(data)])}
+  if (!("clusters" %in% names(data)) && ncol(data) > 2){X <- as.matrix(data[, 3:ncol(data)])}
   event_of_interest <- (status == 1)
   status_mod <- ifelse(event_of_interest, 1, 0)
   N <- length(times)

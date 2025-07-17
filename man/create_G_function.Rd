@@ -21,10 +21,3 @@ estimated values of the censoring survival function at given unique times.
 \details{
 The resulting function can be used to evaluate \eqn{G(t)} for any vector of time points.
 }
-\examples{
-unique_times <- c(1, 2, 3, 5)
-G_vals <- c(1.0, 0.9, 0.85, 0.75)
-G_fun <- create_G_function(unique_times, G_vals)
-G_fun(c(0, 2, 4, 6))  # Returns: 1.0, 0.9, 0.85, 0.75
-
-}

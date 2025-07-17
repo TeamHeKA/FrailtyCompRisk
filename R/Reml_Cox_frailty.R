@@ -113,7 +113,7 @@ Reml_Cox_frailty <- function(data, max_iter = 300, tol = 1e-6, threshold = 1e-5)
 
     if (theta_0 < threshold) {
       theta_0 <- threshold
-      gamma_0 <- Ml_CompRisk(data)
+      gamma_0 <- Ml_Cox(data)$beta
       u_0 <- rep(0, K)
       break
     }

@@ -11,14 +11,7 @@
 #' @param K An integer representing the number of clusters (i.e., the length of \code{u}).
 #'
 #' @return A numeric scalar representing the log-likelihood penalty contribution from the random effects.
-#'
-#' @examples
-#' u <- rnorm(5, 0, 1)
-#' theta <- 0.5
-#' K <- length(u)
-#' logLikelihood_2(u, theta, K)
-#'
-#' @export
+
 logLikelihood_2 = function(u, theta, K) {
   penalty <- -(1/2) * (K * log(2 * pi * theta) + (1 / theta) * (t(u) %*% u))
   return(penalty)

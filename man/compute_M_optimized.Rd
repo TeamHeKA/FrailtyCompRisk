@@ -32,16 +32,6 @@ for the censoring distribution.
 \item The weight matrix accounts for pairwise contributions, depending on event times and causes.
 }
 }
-\examples{
-n <- 100
-times <- rexp(n, 0.2)
-status <- sample(0:2, n, replace = TRUE)
-clusters <- sample(1:5, n, replace = TRUE)
-u_bis <- rnorm(5)
-M1 <- compute_M_optimized(times, status, "KaplanMeier_Censoring_vectorized", NULL, clusters)
-M2 <- compute_M_optimized(times, status, "Nelson_Censoring_vectorized", u_bis, clusters)
-
-}
 \seealso{
 \code{\link[=KaplanMeier_Censoring_vectorized]{KaplanMeier_Censoring_vectorized()}}, \code{\link[=Nelson_Censoring_vectorized]{Nelson_Censoring_vectorized()}}, \code{\link[=create_G_function]{create_G_function()}}
 }
