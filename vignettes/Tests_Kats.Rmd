@@ -394,7 +394,9 @@ generate_full_table <- function(
   return(list(final_df = final_df,beta_vec = beta_vec))
 }
 
-# big_table <- generate_full_table(beta_vec = list(a=c(1,0.2),b=c(-0.2,0,0.4,-0.5),d=c(0.3,0.7,-0.15,-0.45,0.3,-0.5)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 200, pcens = 0.25)
+#big_table <- generate_full_table(beta_vec = list(a=c(0),b=c(0.375)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 200, pcens = 0.25)
+
+#big_table$final_df
 ```
 
 ```{r}
@@ -418,6 +420,9 @@ export_to_latex <- function(final_df, file = "simulation_results.tex") {
   # Sauvegarde dans un fichier
   writeLines(tex_table, file)
 }
+```
+```{r}
+#export_to_latex(big_table$final_df,"tableau_Sandrine.tex")
 ```
 
 

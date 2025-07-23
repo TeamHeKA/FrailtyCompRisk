@@ -301,10 +301,12 @@ covariables describing each individual:
 In total, the complexity of the algorithm is
 \~$\mathcal{O}(N^2 + Np + NK + (p + K)^3)$ in the worst case.
 
-However, the implementation uses sparse matrices (Matrix package) to
+However, the implementation uses sparse matrices (`Matrix` package) to
 significantly reduce practical computational cost.
 
 ## References
+
+The `Matrix` package
 
 Katsahian S, Resche-Rigon M, Chevret S, Porcher R. (2006). *Analysing
 multicentre competing risks data with a mixed proportional hazards model

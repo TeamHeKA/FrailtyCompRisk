@@ -44,6 +44,40 @@ shared frailty, - Fit Cox models.
 The REML method is used when shared frailty is modeled; otherwise, the
 ML method is applied.
 
+## Results
+
+We conducted the same simulation-based tests as in "Analysing
+multicentre competing risks data with a mixed proportional hazards model
+for the subdistribution.", and we obtained similar results:
+
+\preformatted{
+ N    K   theta   theta_hat   MSE(theta)   gamma     gamma_hat   MSE(gamma)
+200   5   0.0     0.024       0.00244      (0)       (-0.068)     (0.23858)
+200  20   0.0     0.055       0.01027      (0)       (0.06)       (0.34056)
+500   5   0.0     0.012       0.00062      (0)       (-0.001)     (0.10598)
+500  20   0.0     0.020       0.00137      (0)       (0.004)      (0.0921)
+200   5   0.0     0.036       0.00690      (0.375)   (0.345)      (0.23996)
+200  20   0.0     0.054       0.01221      (0.375)   (0.381)      (0.29773)
+500   5   0.0     0.012       0.00068      (0.375)   (0.354)      (0.10479)
+500  20   0.0     0.020       0.00161      (0.375)   (0.42)       (0.10242)
+200   5   0.1     0.130       0.03940      (0)       (-0.069)     (0.25903)
+200  20   0.1     0.127       0.02099      (0)       (-0.025)     (0.31313)
+500   5   0.1     0.108       0.01366      (0)       (-0.013)     (0.0985)
+500  20   0.1     0.106       0.00754      (0)       (-0.056)     (0.10335)
+200   5   0.1     0.127       0.02148      (0.375)   (0.372)      (0.26376)
+200  20   0.1     0.139       0.02608      (0.375)   (0.365)      (0.27877)
+500   5   0.1     0.111       0.01158      (0.375)   (0.378)      (0.10493)
+500  20   0.1     0.099       0.00713      (0.375)   (0.377)      (0.10856)
+200   5   0.6     0.655       0.43517      (0)       (0.035)      (0.22487)
+200  20   0.6     0.541       0.11904      (0)       (-0.009)     (0.35059)
+500   5   0.6     0.611       0.29234      (0)       (0.001)      (0.10746)
+500  20   0.6     0.598       0.06516      (0)       (0.004)      (0.10813)
+200   5   0.6     0.649       0.41894      (0.375)   (0.398)      (0.2656)
+200  20   0.6     0.570       0.11168      (0.375)   (0.378)      (0.25024)
+500   5   0.6     0.629       0.30846      (0.375)   (0.381)      (0.10446)
+500  20   0.6     0.569       0.07018      (0.375)   (0.38)       (0.09621)
+}
+
 ## 📦 Installation
 
 You can install the development version of `multicenterCompRisk` from
@@ -68,7 +102,7 @@ You can generate simple datasets following the competing risks model
 with center effect frailty with the code below :
 
 ``` r
-library(frailtycomprisk)
+library(multicenterCompRisk)
 
 ## SIZE AND CENTER REPARTITION
 n_per_cluster=20 #sample size of each center
@@ -137,6 +171,9 @@ where: - N: sample size - T: the number of iterations made, T \<
 max_iter, where max_iter is a parameter you can choose - p: the number
 of covariables - K: the number of clusters
 
+This package uses sparse matrices with the package `Matrix`, which
+improve significantly the speed of the algorithms.
+
 ## 🧠 Example on real data
 
 This is under development...
@@ -151,6 +188,8 @@ GitHub.
 Thanks to Lucas Ducrot and Benjamin Delmas for their contribution.
 
 ## 🧩 References
+
+The `Matrix` package.
 
 If you use this package in your research, please cite the following
 article:
