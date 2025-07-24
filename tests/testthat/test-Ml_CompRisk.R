@@ -1,4 +1,6 @@
 test_that("Ml_CompRisk works", {
+  set.seed(123)
+
   n_cov = 0
   n_per_cluster = 15
   n_cluster = 20

@@ -1,4 +1,6 @@
 test_that("Reml_CompRisk_frailty works", {
+  set.seed(123)
+
   suppressMessages({
   n_cov = 2
   n_per_cluster = 15
