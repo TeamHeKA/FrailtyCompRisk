@@ -1,5 +1,4 @@
-test_that("Ml_Cox works", {
-  set.seed(123)
+test_that("Ml_Cox does not work without covariables.", {
 
   n_cov = 0
   n_per_cluster = 15
@@ -9,6 +8,10 @@ test_that("Ml_Cox works", {
   Z = matrix(rnorm(n*n_cov,0,1),ncol = n_cov)
   df = simulate_data(G,Z,prop = 0.6,beta = c(),theta = 0.3,cens = TRUE)
   expect_error(Ml_Cox(df),"With no covariables, there is nothing to estimate")
+})
+
+test_that("Ml_Cox works in a typical case.",{
+  set.seed(123)
 
   n_cov = 2
   n_per_cluster = 15

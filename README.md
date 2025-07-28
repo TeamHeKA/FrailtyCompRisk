@@ -4,13 +4,13 @@ editor_options:
     wrap: 72
 ---
 
-# multicenterCompRisk
+# FrailtyCompRisk
 
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/multicenterCompRisk)](https://CRAN.R-project.org/package=multicenterCompRisk)
-[![R-CMD-check](https://github.com/DELMASben/multicenterCompRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/DELMASben/multicenterCompRisk/actions/workflows/R-CMD-check.yaml)
+status](https://www.r-pkg.org/badges/version/FrailtyCompRisk)](https://CRAN.R-project.org/package=FrailtyCompRisk)
+[![R-CMD-check](https://github.com/TeamHeKA/FrailtyCompRisk/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/TeamHeKA/FrailtyCompRisk/actions/workflows/R-CMD-check.yaml)
 [![License:
 GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
@@ -18,7 +18,7 @@ GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org
 
 ## 📚 Overview
 
-The goal of **`multicenterCompRisk`** is to provide tools for
+The goal of **`FrailtyCompRisk`** is to provide tools for
 **competing risks survival analysis** in **multicenter studies**,
 accounting for **unobserved heterogeneity** (frailty) at the center
 level as proposed in the following article:
@@ -79,18 +79,18 @@ for the subdistribution.", and we obtained similar results:
 
 ## 📦 Installation
 
-You can install the development version of `multicenterCompRisk` from
+You can install the development version of `FrailtyCompRisk` from
 GitHub using either [`pak`](https://pak.r-lib.org/) or
 [`devtools`](https://github.com/r-lib/devtools):
 
 ``` r
 # Using pak (recommended)
 # install.packages("pak")
-pak::pak("DELMASben/multicenterCompRisk")
+pak::pak("TeamHeKA/FrailtyCompRisk")
 
 # Or using devtools
 # install.packages("devtools")
-devtools::install_github("DELMASben/multicenterCompRisk")
+devtools::install_github("TeamHeKA/FrailtyCompRisk")
 ```
 
 ## 📌 Usage
@@ -101,7 +101,7 @@ You can generate simple datasets following the competing risks model
 with center effect frailty with the code below :
 
 ``` r
-library(multicenterCompRisk)
+library(FrailtyCompRisk)
 
 ## SIZE AND CENTER REPARTITION
 n_per_cluster=20 #sample size of each center

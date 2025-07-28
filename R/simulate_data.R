@@ -53,10 +53,12 @@
 simulate_data <- function(G, Z = NULL, prop = 0.6, beta = NULL, theta = 0.5, cens = FALSE, pcens = 0.25, tau = 0.5) {
   N <- length(G)
   k <- length(unique(G))
+
   p <- if (!is.null(Z)) if (is.null(dim(Z))) 1 else ncol(Z) else 0
 
   if (p > 0 && is.null(beta)) stop("You must provide beta when Z is given.")
   if (p > 0 && length(beta) != p) stop("Length of beta must match the number of columns in Z.")
+  if (p > 0 && length(G) != nrow(Z)){stop("The sample size does not match the number of cluster observations.")}
 
   # Frailty
   cluster_id <- as.numeric(factor(G))

@@ -1,8 +1,8 @@
 ---
-title: "multicenterCompRisk"
+title: "FrailtyCompRisk"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{multicenterCompRisk}
+  %\VignetteIndexEntry{FrailtyCompRisk}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -18,17 +18,17 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(multicenterCompRisk)
+library(FrailtyCompRisk)
 ```
 
-# Package multicenterCompRisk
+# Package FrailtyCompRisk
 
 ## Overview
 
-The package **multicenterCompRisk** is originally designed for
-statisticians and epidemiologists in order to analyze time-to-event data
-where individuals are nested within centers (e.g., hospitals or
-clinics), and where multiple causes of failure may occur.
+The package **FrailtyCompRisk** is originally designed for statisticians
+and epidemiologists in order to analyze time-to-event data where
+individuals are nested within centers (e.g., hospitals or clinics), and
+where multiple causes of failure may occur.
 
 The package is build upon the random-effects model for the
 subdistribution hazard presented in "Analysing multicentre competing

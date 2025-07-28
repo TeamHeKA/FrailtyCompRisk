@@ -8,7 +8,7 @@ vignette: >
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library(multicenterCompRisk)
+library(FrailtyCompRisk)
 library(tibble)
 library(dplyr)
 library(knitr)
@@ -137,26 +137,29 @@ Multi_tests = function(N_test,
       G,
       Z,
       prop = 0.6,
-      beta = c(1,1.2,0,-0.5),
-      theta = 0.6,
+      beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
+      theta = 0,
       cens = TRUE,
       pcens = 0.25,
       tau = 0.5
     )
-    if (n_cov > 0){
-      X = as.matrix(df[,4:(n_cov + 3)])}
-    else{
-      X = matrix(0,nrow = n,ncol = 0)}
-    ind <- which(df$status > 1)
-    df$status[ind] <- 1
-    df = data.frame(times = df$times,status = df$status,clusters = df$clusters,X)
+    check_data_format(df)
     res <- tryCatch(
-      Reml_Cox_frailty(df),
+      Reml_Cox_frailty(df, max_iter = 100),
       error = function(e) {
         message("Erreur à l’itération ", i, " : ", e$message)
         return(NULL)
       }
     )
+   if (is.null(res)) {
+     res_bis <- tryCatch(
+      Ml_Cox(df, max_iter = 100),
+      error = function(e) {
+        message("Erreur à l’itération ", i, " : ", e$message)
+        return(NULL)})
+     res <- list(beta = res_bis$beta,theta = 0)
+   }
+    cat("res$beta", res$beta,"res$theta", res$theta,"\n")
     if (!is.null(res)) {
       if (n_cov > 0) {
         results[i, 1:n_cov] <- res$beta
@@ -170,9 +173,8 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(N_test = 100,n_cov = 4,n_cluster = 20,n_per_cluster = 15,a1 = 0,b1 = 1)
-
-m = compute_mean_mse(M,c(1,1.2,0,-0.5,0.6))
+M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
+m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0))
 m
 ```
 
@@ -267,7 +269,7 @@ Multi_tests = function(N_test,
       Z,
       prop = 0.6,
       beta = c(0, 0.25, 0.12, 0.33, 0.24, 1, -0.2, -0.35),
-      theta = 0.6,
+      theta = 0,
       cens = TRUE,
       pcens = 0.25,
       tau = 0.5
@@ -280,6 +282,15 @@ Multi_tests = function(N_test,
         return(NULL)
       }
     )
+   if (is.null(res)) {
+     res_bis <- tryCatch(
+      Ml_CompRisk(df, max_iter = 100),
+      error = function(e) {
+        message("Erreur à l’itération ", i, " : ", e$message)
+        return(NULL)})
+     res <- list(beta = res_bis$beta,theta = 0)
+   }
+    cat("res$beta", res$beta,"res$theta", res$theta,"\n")
     if (!is.null(res)) {
       if (n_cov > 0) {
         results[i, 1:n_cov] <- res$beta
@@ -293,8 +304,8 @@ Multi_tests = function(N_test,
   return(results)
 }
 
-M = Multi_tests(N_test = 100,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
-m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0.6))
+M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
+m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0))
 m
 ```
 
@@ -394,7 +405,7 @@ generate_full_table <- function(
   return(list(final_df = final_df,beta_vec = beta_vec))
 }
 
-#big_table <- generate_full_table(beta_vec = list(a=c(0),b=c(0.375)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 200, pcens = 0.25)
+#big_table <- generate_full_table(beta_vec = list(a=c(0),b=c(0.375)), theta_vec = c(0, 0.1, 0.6), N_vec = c(200, 500), K_vec = c(5, 20), n_sim = 100, pcens = 0.25)
 
 #big_table$final_df
 ```

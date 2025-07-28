@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(multicenterCompRisk)
+library(FrailtyCompRisk)
 
-test_check("multicenterCompRisk")
+test_check("FrailtyCompRisk")

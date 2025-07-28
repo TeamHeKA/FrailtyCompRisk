@@ -47,6 +47,8 @@ Reml_Cox_frailty <- function(data, max_iter = 300, tol = 1e-6, threshold = 1e-5)
 
   clusters <- data$clusters
   K <- length(unique(clusters))
+  if (K==1)
+  {stop("There is only one cluster, therefore there are no cluster effect, you might use: \n - method = 'Cox' if you are using 'Parameters_estimation()'\n - 'Ml_Cox()' if you are using 'Reml_Cox_frailty()'")}
 
   if (p > 0) {
     data_ini <- data.frame(times = times, status = status, clusters = clusters, as.matrix(X))
@@ -112,10 +114,7 @@ Reml_Cox_frailty <- function(data, max_iter = 300, tol = 1e-6, threshold = 1e-5)
     theta_0 <- as.numeric((sum(u_0^2)) / (K - (trace_term / theta_0)))
 
     if (theta_0 < threshold) {
-      theta_0 <- threshold
-      gamma_0 <- Ml_Cox(data)$beta
-      u_0 <- rep(0, K)
-      break
+      stop("The variance of the cluster effect is inferior to the threshold ('threshold' =",threshold,"), we suggest you use the method without frailty:\n - method = 'Cox' if you are using 'Parameters_estimation()'\n - 'Ml_Cox()' if you are using 'Reml_Cox_frailty()'")
     }
 
     eta <- if (p > 0) as.vector(Z %*% gamma_0 + Q %*% u_0) else as.vector(Q %*% u_0)
@@ -140,13 +139,11 @@ Reml_Cox_frailty <- function(data, max_iter = 300, tol = 1e-6, threshold = 1e-5)
   trace_A22 <- sum(diag(as.matrix(A22)))
   df_eff <- K - trace_A22 / theta_0
 
-  if (theta_0 != threshold) {
-    suppressWarnings({
-      p_value <- pchisq(wald_stat, df = df_eff, lower.tail = FALSE)
-    })
-  } else {
-    message("theta might be inferior to the threshold, it suggests that the cluster effect may be negligible")
-    p_value <- NA
+  suppressWarnings({
+    p_value <- pchisq(wald_stat, df = df_eff, lower.tail = FALSE)
+  })
+  if (is.nan(p_value)){
+    message("The estimated value of theta is too small to allow a reliable statistical test of whether theta = 0, hence the p-value is 'NaN'. \nThis suggests that the cluster effect may be negligible.")
   }
 
   if (!is.na(p_value) && p_value >= 0.05) {

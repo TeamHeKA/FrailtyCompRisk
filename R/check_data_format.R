@@ -46,6 +46,12 @@ check_data_format <- function(df)
       "The data frame must contain at least 3 columns:\n - 'times': the observed time,\n - 'status': 0 for right-censoring, i in [1,n] otherwise, where i is the cause of failure,\n - 'clusters': cluster/group indicator."
     )
   }
+  n_row <- nrow(df)
+  if (n_row == 0) {
+    stop(
+      "The dataframe must contain at least one row, otherwise, these is nothing to analyse."
+    )
+  }
 
   col_names <- colnames(df)
   expected_names <- c("times", "status", "clusters")
@@ -55,12 +61,12 @@ check_data_format <- function(df)
     }
   }
 
-  if (anyNA(df$times))
-    stop("Some values in 'times' are missing (NA).")
-  if (anyNA(df$status))
-    stop("Some values in 'status' are missing (NA).")
-  if (anyNA(df$clusters))
-    stop("Some values in 'clusters' are missing (NA).")
+  if (!(is.numeric(df$times) && all(is.finite(df$times)) && all(df$times >= 0)))
+    stop("Some values in 'times' are missing (NA) or non-positive numeric.")
+  if (!(is.numeric(df$status) && all(is.finite(df$status)) && all(df$status == floor(df$status)) && all(df$status >= 0)))
+    stop("Some values in 'status' are missing (NA) or non-positive integer.")
+  if (!(is.numeric(df$clusters) && all(is.finite(df$clusters)) && all(df$clusters == floor(df$clusters)) && all(df$clusters >= 0)))
+    stop("Some values in 'clusters' are missing (NA) or non-positive integer.")
   if (n_cols > 3) {
     covariate_cols <- df[, 4:n_cols, drop = FALSE]
     if (!all(sapply(covariate_cols, is.numeric)) || any(is.na(covariate_cols))) {
