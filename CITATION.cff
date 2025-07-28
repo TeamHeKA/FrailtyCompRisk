@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+title: FrailtyCompRisk
+message:"If you use this software, please cite it using the metadata from this file."
+type: software
+version: 0.1.0
+authors:
+  - given-names: Sandrine
+    family-names: Katsahian
+    orcid: 'https://orcid.org/0000-0002-7261-0671'
+  - given-names: Lucas
+    family-names: Ducrot
+    orcid: 'https://orcid.org/0000-0002-8020-2897'
+  - given-names: Benjamin
+    family-names: Delmas
+    email: benjamin.delmas@ensae.fr
+date-released: 2025-07-21
+repository: 'https://github.com/TeamHeKA/FrailtyCompRisk'
+url: 'https://github.com/TeamHeKA/FrailtyCompRisk'
+license: GPL-3.0-only
+abstract:"An R package for fitting competing risks models with shared frailty, based on the methodology of Katsahian et al. (2006).""
+keywords:
+  - survival analysis
+  - competing risks
+  - frailty models
+  - proportional hazards
+  - statistical modeling
+references:
+  - type: article
+    authors:
+      - family-names: Katsahian
+        given-names: Sandrine
+      - family-names: Resche‑Rigon
+        given-names: Matthieu
+      - family-names: Chevret
+        given-names: Sylvie
+      - family-names: Porcher
+        given-names: Raphaël
+    title: "Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution"
+    journal: "Statistics in Medicine"
+    year: 2006
+    volume: 25
+    issue: 24
+    pages: "4267–4278"
+    doi: 10.1002/sim.2684
+
