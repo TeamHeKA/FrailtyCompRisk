@@ -12,7 +12,7 @@ Description: The FrailtyCompRisk package implements the method proposed by Sandr
     The package supports both Maximum Likelihood (ML) and Restricted Maximum Likelihood (REML) estimation, allowing for flexible modeling of between-center heterogeneity. 
     It is particularly designed for survival analyses in multicenter clinical trials or registries, where accounting for latent center effects is crucial. 
     Core features include data simulation, model estimation with or without frailty, cluster-dependent censoring options, likelihood computation, and formal testing of the relevance of the frailty variance.
-License: GPL-3
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

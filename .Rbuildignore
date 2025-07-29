@@ -5,3 +5,5 @@
 ^Meta$
 ^cran-comments\.md$
 ^CITATION\.cff$
+^.github$
+^LICENSE\.md$
