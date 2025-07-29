@@ -96,7 +96,6 @@ Multi_tests = function(N_test,
         results[i, 1:n_cov] <- res$beta
       }
     }
-    cat("itération", i, " sur ", N_test, "\n")
   }
   return(results)
 }
@@ -118,6 +117,7 @@ Multi_tests = function(N_test,
                        a1,
                        b1)
 {
+  suppressMessages({
   n = n_cluster * n_per_cluster
   results <- data.frame(matrix(NA, nrow = N_test, ncol = (n_cov + 1)))
   if (n_cov > 0) {
@@ -159,7 +159,6 @@ Multi_tests = function(N_test,
         return(NULL)})
      res <- list(beta = res_bis$beta,theta = 0)
    }
-    cat("res$beta", res$beta,"res$theta", res$theta,"\n")
     if (!is.null(res)) {
       if (n_cov > 0) {
         results[i, 1:n_cov] <- res$beta
@@ -168,12 +167,12 @@ Multi_tests = function(N_test,
         results[i, "theta_hat"] <- res$theta
       }
     }
-    cat("itération", i, " sur ", N_test, "\n")
   }
+  })
   return(results)
 }
 
-M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
+M = Multi_tests(N_test = 100,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
 m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0))
 m
 ```
@@ -228,7 +227,6 @@ Multi_tests = function(N_test,
         results[i, 1:n_cov] <- res$beta
       }
     }
-    cat("itération", i, " sur ", N_test, "\n")
   }
   return(results)
 }
@@ -249,6 +247,7 @@ Multi_tests = function(N_test,
                        a1,
                        b1)
 {
+  suppressMessages({
   n = n_cluster * n_per_cluster
   results <- data.frame(matrix(NA, nrow = N_test, ncol = (n_cov + 1)))
   if (n_cov > 0) {
@@ -290,7 +289,6 @@ Multi_tests = function(N_test,
         return(NULL)})
      res <- list(beta = res_bis$beta,theta = 0)
    }
-    cat("res$beta", res$beta,"res$theta", res$theta,"\n")
     if (!is.null(res)) {
       if (n_cov > 0) {
         results[i, 1:n_cov] <- res$beta
@@ -299,12 +297,12 @@ Multi_tests = function(N_test,
         results[i, "theta_hat"] <- res$theta
       }
     }
-    cat("itération", i, " sur ", N_test, "\n")
   }
+  })
   return(results)
 }
 
-M = Multi_tests(N_test = 20,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
+M = Multi_tests(N_test = 100,n_cov = 8,n_cluster = 15, n_per_cluster = 20,a1 = 0,b1 = 1)
 m = compute_mean_mse(M,c(0,0.25,0.12,0.33,0.24,1,-0.2,-0.35,0))
 m
 ```
