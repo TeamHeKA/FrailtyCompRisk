@@ -141,7 +141,7 @@ Reml_CompRisk_frailty <- function(data, cluster_censoring = FALSE, max_iter = 30
     theta_0 <- as.numeric((sum(u_0^2)) / (K - (trace_term / theta_0)))
 
     if (theta_0 < threshold) {
-      stop("The variance of the cluster effect is inferior to the threshold ('threshold' =",threshold,"), we suggest you use the method without frailty:\n - method = 'CompRisk' if you are using 'Parameters_estimation()'\n - 'Ml_CompRisk()' if you are using 'Reml_CompRisk_frailty()'")
+      stop("The estimated variance of the cluster effect is inferior to the threshold ('threshold' =",threshold,"), we suggest you use the method without frailty:\n - method = 'CompRisk' if you are using 'Parameters_estimation()'\n - 'Ml_CompRisk()' if you are using 'Reml_CompRisk_frailty()'")
     }
 
     eta <- if (p > 0) as.vector(Z %*% gamma_0 + Q %*% u_0) else as.vector(Q %*% u_0)

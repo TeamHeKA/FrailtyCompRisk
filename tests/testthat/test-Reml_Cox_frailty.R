@@ -82,7 +82,7 @@ test_that("When the estimated variance for the frailty effect is too small, it s
   G = rep(1:n_cluster, each = n_per_cluster)
   Z = matrix(rnorm(n*n_cov,0,1),ncol = n_cov)
   df = simulate_data(G,Z,prop = 0.6,beta = c(1,1.2,0,0,1),theta = 0,cens = TRUE)
-  expect_error(Reml_Cox_frailty(df, threshold = 1e-5),"The variance of the cluster effect is inferior to the threshold \\('threshold' =1e-05\\), we suggest you use the method without frailty:\\n - method = 'Cox' if you are using 'Parameters_estimation\\(\\)'\\n - 'Ml_Cox\\(\\)' if you are using 'Reml_Cox_frailty\\(\\)'")
+  expect_error(Reml_Cox_frailty(df, threshold = 1e-5),"The estimated variance of the cluster effect is inferior to the threshold \\('threshold' =1e-05\\), we suggest you use the method without frailty:\\n - method = 'Cox' if you are using 'Parameters_estimation\\(\\)'\\n - 'Ml_Cox\\(\\)' if you are using 'Reml_Cox_frailty\\(\\)'")
 })
 
 test_that("When there is only one cluster, it suggests to use a Cox model.",{

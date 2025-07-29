@@ -114,7 +114,7 @@ Reml_Cox_frailty <- function(data, max_iter = 300, tol = 1e-6, threshold = 1e-5)
     theta_0 <- as.numeric((sum(u_0^2)) / (K - (trace_term / theta_0)))
 
     if (theta_0 < threshold) {
-      stop("The variance of the cluster effect is inferior to the threshold ('threshold' =",threshold,"), we suggest you use the method without frailty:\n - method = 'Cox' if you are using 'Parameters_estimation()'\n - 'Ml_Cox()' if you are using 'Reml_Cox_frailty()'")
+      stop("The estimated variance of the cluster effect is inferior to the threshold ('threshold' =",threshold,"), we suggest you use the method without frailty:\n - method = 'Cox' if you are using 'Parameters_estimation()'\n - 'Ml_Cox()' if you are using 'Reml_Cox_frailty()'")
     }
 
     eta <- if (p > 0) as.vector(Z %*% gamma_0 + Q %*% u_0) else as.vector(Q %*% u_0)
