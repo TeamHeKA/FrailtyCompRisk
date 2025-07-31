@@ -1,11 +1,11 @@
 citHeader("To cite the FrailtyCompRisk package in publications use:")
 
-citEntry(
-  entry = "Manual",
+bibentry(
+  bibtype = "Manual",
   title = "FrailtyCompRisk: Estimation Methods for Competing Risks Models with Shared Frailty",
-  author = personList(
-    person("Sandrine", "Katsahian", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7261-0671")),
-    person("Lucas", "Ducrot", role = "aut", comment = c(ORCID = "0000-0002-8020-2897")),
+  author = c(
+    person("Sandrine", "Katsahian", role = "aut", comment = c(ORCID = "0000-0002-7261-0671")),
+    person("Lucas", "Ducrot", role = c("aut","cre"), comment = c(ORCID = "0000-0002-8020-2897")),
     person("Benjamin", "Delmas", role = "aut", email = "benjamin.delmas@ensae.fr")
   ),
   year = "2025",
@@ -13,10 +13,10 @@ citEntry(
   url = "https://github.com/TeamHeKA/FrailtyCompRisk"
 )
 
-citEntry(
-  entry = "Article",
+bibentry(
+  bibtype = "Article",
   title = "Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution",
-  author = personList(
+  author = c(
     person("Sandrine", "Katsahian"),
     person("Matthieu", "Resche-Rigon"),
     person("Sylvie", "Chevret"),
