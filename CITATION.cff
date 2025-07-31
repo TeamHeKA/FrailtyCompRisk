@@ -10,13 +10,14 @@ authors:
   - given-names: Lucas
     family-names: Ducrot
     orcid: 'https://orcid.org/0000-0002-8020-2897'
+    email: lucas.ducrot@inria.fr
   - given-names: Benjamin
     family-names: Delmas
     email: benjamin.delmas@ensae.fr
 date-released: 2025-07-21
 repository: 'https://github.com/TeamHeKA/FrailtyCompRisk'
 url: 'https://github.com/TeamHeKA/FrailtyCompRisk'
-license: GPL-3.0-only
+license: GPL-3.0-or-later
 abstract: >
   An R package for fitting competing risks models with shared frailty, based on the methodology of Katsahian et al. (2006).
 keywords:
@@ -43,4 +44,3 @@ references:
     issue: 24
     pages: "4267–4278"
     doi: 10.1002/sim.2684
-
