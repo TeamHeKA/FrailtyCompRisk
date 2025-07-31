@@ -18,10 +18,10 @@ GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org
 
 ## 📚 Overview
 
-The goal of **`FrailtyCompRisk`** is to provide tools for
-**competing risks survival analysis** in **multicenter studies**,
-accounting for **unobserved heterogeneity** (frailty) at the center
-level as proposed in the following article:
+The goal of **`FrailtyCompRisk`** is to provide tools for **competing
+risks survival analysis** in **multicenter studies**, accounting for
+**unobserved heterogeneity** (frailty) at the center level as proposed
+in the following article:
 
 Katsahian S, Resche-Rigon M, Chevret S, Porcher R. Analysing multicentre
 competing risks data with a mixed proportional hazards model for the
@@ -79,8 +79,8 @@ for the subdistribution.", and we obtained similar results:
 
 ## 📦 Installation
 
-You can install the development version of `FrailtyCompRisk` from
-GitHub using either [`pak`](https://pak.r-lib.org/) or
+You can install the development version of `FrailtyCompRisk` from GitHub
+using either [`pak`](https://pak.r-lib.org/) or
 [`devtools`](https://github.com/r-lib/devtools):
 
 ``` r

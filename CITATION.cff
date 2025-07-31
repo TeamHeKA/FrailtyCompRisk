@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-title: FrailtyCompRisk
-message:"If you use this software, please cite it using the metadata from this file."
+title: "FrailtyCompRisk"
+message: "If you use this software, please cite it using the metadata from this file."
 type: software
 version: 0.1.0
 authors:
@@ -17,7 +17,7 @@ date-released: 2025-07-21
 repository: 'https://github.com/TeamHeKA/FrailtyCompRisk'
 url: 'https://github.com/TeamHeKA/FrailtyCompRisk'
 license: GPL-3.0-only
-abstract:"An R package for fitting competing risks models with shared frailty, based on the methodology of Katsahian et al. (2006).""
+abstract:"An R package for fitting competing risks models with shared frailty, based on the methodology of Katsahian et al. (2006)."
 keywords:
   - survival analysis
   - competing risks
