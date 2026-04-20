@@ -1,14 +1,12 @@
 Package: FrailtyCompRisk
 Title: Competing Risks Models for Multicenter Survival Data with Frailty
 Version: 0.1.1
-Authors@R: c(
-    person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = "aut"),
+Authors@R: c(person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = "aut"),
     person("Lucas", "Ducrot", email = "lucas.ducrot@inria.fr", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-8020-2897")),
     person("Sandrine", "Katsahian", email = "sandrine.katsahian@aphp.fr", role = "aut",
            comment = c(ORCID = "0000-0002-7261-0671")),
-    person(given = "Inria", role = "cph")
-)
+    person(given = "Inria", role = "cph"))
 Description: Implements methods for analyzing competing risks data in multicenter
     survival studies using frailty models. The approach relies on a mixed
     proportional hazards model for the subdistribution, allowing for
