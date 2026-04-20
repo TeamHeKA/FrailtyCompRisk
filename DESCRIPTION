@@ -7,11 +7,10 @@ Authors@R: c(
   person("Sandrine", "Katsahian", email ="sandrine.katsahian@aphp.fr", role = "aut", comment = c(ORCID = "0000-0002-7261-0671")),
   person(given = "Inria", role = "cph")
   )
-Description: The FrailtyCompRisk package implements the method proposed by Sandrine Katsahian et al. in the article “Analysing multicentre competing risks data with a mixed proportional hazards model for the subdistribution” (Statistics in Medicine, 2006).
-    It provides tools for analyzing competing risks data arising from multicenter studies, incorporating cluster-specific frailty terms within a subdistribution hazards framework. 
-    The package supports both Maximum Likelihood (ML) and Restricted Maximum Likelihood (REML) estimation, allowing for flexible modeling of between-center heterogeneity. 
-    It is particularly designed for survival analyses in multicenter clinical trials or registries, where accounting for latent center effects is crucial. 
-    Core features include data simulation, model estimation with or without frailty, cluster-dependent censoring options, likelihood computation, and formal testing of the relevance of the frailty variance.
+Description: Implements methods for analyzing competing risks data in multicenter survival studies using frailty models.
+The approach relies on a mixed proportional hazards model for the subdistribution, allowing for cluster-specific random effects.
+The package provides tools for model estimation with or without frailty using Maximum Likelihood (ML) and Restricted Maximum Likelihood (REML).
+It supports flexible modeling of between-center heterogeneity and is particularly suited for multicenter clinical trials or registries.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
