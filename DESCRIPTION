@@ -2,15 +2,23 @@ Package: FrailtyCompRisk
 Title: Competing Risks Models for Multicenter Survival Data with Frailty
 Version: 0.1.1
 Authors@R: c(
-  person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = "aut"),
-  person("Lucas", "Ducrot", email = "lucas.ducrot@inria.fr",role = c("aut","cre"), comment = c(ORCID = "0000-0002-8020-2897")),
-  person("Sandrine", "Katsahian", email ="sandrine.katsahian@aphp.fr", role = "aut", comment = c(ORCID = "0000-0002-7261-0671")),
-  person(given = "Inria", role = "cph")
-  )
-Description: Implements methods for analyzing competing risks data in multicenter survival studies using frailty models.
-The approach relies on a mixed proportional hazards model for the subdistribution, allowing for cluster-specific random effects.
-The package provides tools for model estimation with or without frailty using Maximum Likelihood (ML) and Restricted Maximum Likelihood (REML).
-It supports flexible modeling of between-center heterogeneity and is particularly suited for multicenter clinical trials or registries.
+    person("Benjamin", "Delmas", email = "benjamin.delmas@ensae.fr", role = "aut"),
+    person("Lucas", "Ducrot", email = "lucas.ducrot@inria.fr", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-8020-2897")),
+    person("Sandrine", "Katsahian", email = "sandrine.katsahian@aphp.fr", role = "aut",
+           comment = c(ORCID = "0000-0002-7261-0671")),
+    person(given = "Inria", role = "cph")
+)
+Description: Implements methods for analyzing competing risks data in multicenter
+    survival studies using frailty models. The approach relies on a mixed
+    proportional hazards model for the subdistribution, allowing for
+    cluster-specific random effects. The package provides tools for model
+    estimation with or without frailty using Maximum Likelihood (ML) and
+    Restricted Maximum Likelihood (REML). It supports flexible modeling of
+    between-center heterogeneity and is particularly suited for multicenter
+    clinical trials or registries. Core features include data simulation,
+    likelihood computation, cluster-dependent censoring options, and testing of
+    frailty effects.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
