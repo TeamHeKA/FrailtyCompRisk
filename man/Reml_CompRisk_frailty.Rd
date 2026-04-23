@@ -47,7 +47,7 @@ The function fits a proportional hazards model for cause 1, accounting for unobs
 If the estimated frailty variance \eqn{\theta} becomes smaller than the provided \code{threshold}, the model reverts to a standard Cox model for cause 1 using \code{\link{Ml_CompRisk}}.
 }
 \examples{
-\dontrun{
+\donttest{
 data <- data.frame(
   times = c(4, 6, 10, 12, 3),
   status = c(1, 0, 2, 1, 0),

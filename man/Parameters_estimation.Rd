@@ -7,7 +7,7 @@
 Parameters_estimation(
   data,
   method = "CompRisk_frailty",
-  cluster_censoring = F,
+  cluster_censoring = FALSE,
   max_iter = 300,
   tol = 1e-06,
   threshold = 1e-06
@@ -39,8 +39,19 @@ Parameters_estimation(
 \item{threshold}{Lower bound for the frailty variance parameter \eqn{\theta}. If the estimated value falls below this threshold, frailty is considered negligible (default = 1e-5).}
 }
 \value{
-A list of results from the selected estimation method, typically including estimated regression coefficients, frailty variance (if applicable), random effects (if applicable), and a p-value testing the frailty variance.
-Returns \code{NULL} in case of error.
+A named list whose structure depends on \code{method}.
+For \code{"CompRisk"} and \code{"Cox"}, the returned list contains:
+\describe{
+\item{beta}{Numeric vector of estimated regression coefficients.}
+}
+For \code{"CompRisk_frailty"} and \code{"Cox_frailty"}, the returned list may contain:
+\describe{
+\item{beta}{Numeric vector of estimated fixed-effect coefficients.}
+\item{u}{Numeric vector of estimated cluster-specific frailties.}
+\item{theta}{Estimated frailty variance parameter.}
+\item{p_value}{P-value for testing the null hypothesis of no frailty effect.}
+}
+Returns \code{NULL} if estimation fails.
 }
 \description{
 Provides a unified wrapper to estimate model parameters under four different modeling strategies:
@@ -63,7 +74,7 @@ This wrapper allows seamless switching between various modeling frameworks. It a
 Data format is validated via the helper function \code{\link{check_data_format}}. An error is raised if input format is invalid or if \code{cluster_censoring} is used with an incompatible method.
 }
 \examples{
-\dontrun{
+\donttest{
 data <- data.frame(
   times = c(4, 6, 10, 12, 3),
   status = c(1, 0, 2, 1, 0),

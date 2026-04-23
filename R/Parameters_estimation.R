@@ -28,8 +28,19 @@
 #' @param threshold Lower bound for the frailty variance parameter \eqn{\theta}. If the estimated value falls below this threshold, frailty is considered negligible (default = 1e-5).
 
 #'
-#' @return A list of results from the selected estimation method, typically including estimated regression coefficients, frailty variance (if applicable), random effects (if applicable), and a p-value testing the frailty variance.
-#' Returns \code{NULL} in case of error.
+#' @return A named list whose structure depends on `method`.
+#' For `"CompRisk"` and `"Cox"`, the returned list contains:
+#' \describe{
+#'   \item{beta}{Numeric vector of estimated regression coefficients.}
+#' }
+#' For `"CompRisk_frailty"` and `"Cox_frailty"`, the returned list may contain:
+#' \describe{
+#'   \item{beta}{Numeric vector of estimated fixed-effect coefficients.}
+#'   \item{u}{Numeric vector of estimated cluster-specific frailties.}
+#'   \item{theta}{Estimated frailty variance parameter.}
+#'   \item{p_value}{P-value for testing the null hypothesis of no frailty effect.}
+#' }
+#' Returns `NULL` if estimation fails.
 #'
 #' @details
 #' This wrapper allows seamless switching between various modeling frameworks. It automatically calls:
@@ -43,7 +54,7 @@
 #' Data format is validated via the helper function \code{\link{check_data_format}}. An error is raised if input format is invalid or if `cluster_censoring` is used with an incompatible method.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data <- data.frame(
 #'   times = c(4, 6, 10, 12, 3),
 #'   status = c(1, 0, 2, 1, 0),
@@ -59,7 +70,7 @@
 #'
 #' @export
 
-Parameters_estimation <- function(data,method = "CompRisk_frailty",cluster_censoring = F,max_iter = 300, tol = 1e-6,threshold = 1e-6)
+Parameters_estimation <- function(data,method = "CompRisk_frailty",cluster_censoring = FALSE,max_iter = 300, tol = 1e-6,threshold = 1e-6)
 {
   if (!(method %in% c("CompRisk_frailty","CompRisk","Cox_frailty","Cox")))
   {

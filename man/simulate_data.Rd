@@ -33,13 +33,14 @@ simulate_data(
 \item{tau}{Variance of the shared frailty term for censoring times (default: \code{0}).}
 }
 \value{
-A \code{data.frame} with columns:
+A \code{data.frame} with one row per individual and at least the columns:
 \describe{
-\item{times}{Observed time (either event time or censoring time).}
-\item{status}{Event indicator: \code{0} for censored, \code{1} for cause 1, \code{2} for cause 2.}
-\item{clusters}{Cluster ID for each individual.}
-\item{Cov}{Optional covariate matrix (if any).}
+\item{times}{Observed follow-up time.}
+\item{status}{Event indicator: \code{0} for censoring, \code{1} for cause 1,
+\code{2} for cause 2.}
+\item{clusters}{Cluster identifier.}
 }
+If covariates are simulated, additional numeric covariate columns are included.
 }
 \description{
 This function simulates clustered time-to-event data under a competing risks framework
@@ -47,7 +48,7 @@ with shared frailty and the possibility of random censoring. Cause 1 is modeled 
 an inversion method of the subdistribution function, and cause 2 is introduced when inversion fails.
 }
 \examples{
-\dontrun{
+\donttest{
 n_cov <- 1
 n_cluster <- 5
 n_per_cluster <- 100

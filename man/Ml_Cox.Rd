@@ -14,7 +14,12 @@ Ml_Cox(data, max_iter = 100, tol = 1e-06)
 \item{tol}{Convergence tolerance for the Euclidean norm (default = 1e-6).}
 }
 \value{
-A numeric vector of estimated regression coefficients.
+A named list with one element:
+\describe{
+\item{beta}{A numeric vector of estimated regression coefficients in the
+Cox proportional hazards model. Each coefficient represents the log hazard
+ratio associated with the corresponding covariate.}
+}
 }
 \description{
 This function computes the maximum likelihood estimates of the regression coefficients in the Cox proportional hazards model using Newton-Raphson iterations.

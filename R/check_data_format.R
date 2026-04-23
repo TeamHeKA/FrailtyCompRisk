@@ -5,11 +5,11 @@
 #'
 #' @param df A data frame to be checked.
 #'
-#' @return Returns \code{TRUE} if the data frame is correctly structured; otherwise, returns
-#' a character string describing the cause of failure.
+#' @return `TRUE` if `df` has the expected structure.
+#' Otherwise, the function stops with an error describing the formatting issue.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' n_cov = 2
 #' n_cluster = 5
 #' n_per_cluster = 100

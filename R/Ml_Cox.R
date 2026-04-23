@@ -5,7 +5,12 @@
 #' @param data A data frame with columns: `times`, `status`, and covariates starting from the 4th column.
 #' @param max_iter Maximum number of iterations (default = 100).
 #' @param tol Convergence tolerance for the Euclidean norm (default = 1e-6).
-#' @return A numeric vector of estimated regression coefficients.
+#' @return A named list with one element:
+#' \describe{
+#'   \item{beta}{A numeric vector of estimated regression coefficients in the
+#'   Cox proportional hazards model. Each coefficient represents the log hazard
+#'   ratio associated with the corresponding covariate.}
+#' }
 #' @export
 Ml_Cox <- function(data, max_iter = 100, tol = 1e-6) {
   times <- data$times

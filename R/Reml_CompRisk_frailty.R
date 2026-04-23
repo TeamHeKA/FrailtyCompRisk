@@ -30,7 +30,7 @@
 #' @seealso \code{\link{Ml_CompRisk}}, \code{\link{Reml_Cox_frailty}}, \code{\link{logLikelihood_1}}, \code{\link{compute_M_optimized}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data <- data.frame(
 #'   times = c(4, 6, 10, 12, 3),
 #'   status = c(1, 0, 2, 1, 0),

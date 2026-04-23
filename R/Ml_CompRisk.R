@@ -11,7 +11,12 @@
 #' @param max_iter Maximum number of Newton-Raphson iterations (default = 100).
 #' @param tol Convergence tolerance for the change in parameter estimates (default = 1e-6).
 #'
-#' @return A numeric vector \code{beta} of estimated regression coefficients for the cause-specific hazard of cause 1.
+#' @return A named list with one element:
+#' \describe{
+#'   \item{beta}{A numeric vector of estimated regression coefficients for the
+#'   subdistribution hazard of cause 1. Each coefficient represents the log
+#'   effect of the corresponding covariate on the subdistribution hazard.}
+#' }
 #'
 #' @details
 #' The function fits a Cox-type model for the subdistribution hazard of cause 1, treating all other causes (including censoring) as censored (i.e., status != 1 becomes 0).
@@ -22,7 +27,7 @@
 #' @seealso \code{\link{Reml_Cox_frailty}}, \code{\link{Ml_Cox}}, \code{\link{logLikelihood_1}}
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   data <- data.frame(
 #'     times = c(5, 10, 8, 12),
 #'     status = c(1, 0, 2, 1),

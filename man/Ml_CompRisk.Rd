@@ -19,7 +19,12 @@ Ml_CompRisk(data, max_iter = 100, tol = 1e-06)
 \item{tol}{Convergence tolerance for the change in parameter estimates (default = 1e-6).}
 }
 \value{
-A numeric vector \code{beta} of estimated regression coefficients for the cause-specific hazard of cause 1.
+A named list with one element:
+\describe{
+\item{beta}{A numeric vector of estimated regression coefficients for the
+subdistribution hazard of cause 1. Each coefficient represents the log
+effect of the corresponding covariate on the subdistribution hazard.}
+}
 }
 \description{
 Performs maximum likelihood estimation (MLE) for the effect of covariates on the cause-specific hazard function of cause 1 in a competing risks framework.
@@ -31,7 +36,7 @@ It uses a Newton-Raphson procedure to maximize the partial likelihood.
 The design matrix is reordered internally by event time to facilitate risk set computation.
 }
 \examples{
-\dontrun{
+\donttest{
   data <- data.frame(
     times = c(5, 10, 8, 12),
     status = c(1, 0, 2, 1),

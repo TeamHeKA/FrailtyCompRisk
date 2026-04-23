@@ -10,15 +10,15 @@ check_data_format(df)
 \item{df}{A data frame to be checked.}
 }
 \value{
-Returns \code{TRUE} if the data frame is correctly structured; otherwise, returns
-a character string describing the cause of failure.
+\code{TRUE} if \code{df} has the expected structure.
+Otherwise, the function stops with an error describing the formatting issue.
 }
 \description{
 Validates whether the submitted data frame is correctly structured for the analysis
 of multicentre competing risks with frailty.
 }
 \examples{
-\dontrun{
+\donttest{
 n_cov = 2
 n_cluster = 5
 n_per_cluster = 100
