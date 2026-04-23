@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \donttest{
-#' n_cov = 2
+#' n_cov = 1
 #' n_cluster = 5
 #' n_per_cluster = 100
 #' n = n_cluster * n_per_cluster
